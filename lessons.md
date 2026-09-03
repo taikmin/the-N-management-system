@@ -135,3 +135,10 @@
 - **배운 점**: 여러 축의 권한 (시스템 축 vs 도메인 축)은 별도의 헬퍼 함수로 분리해서 표현. `is_superadmin`, `is_ceo_or_above`, `is_management` 처럼 각각 다른 축·수준을 명확히 이름 짓기.
 - **앞으로의 적용**: RLS 정책은 헬퍼 함수 이름만 보고 의도를 읽을 수 있어야 함. `is_admin` 같은 애매한 이름 지양.
 
+## L-015. Flutter run은 background 실행 불가
+- **날짜**: 2026-09-03
+- **상황**: `flutter run -d chrome`을 background로 돌리려 시도.
+- **발견/문제**: Flutter run은 interactive TTY(hot reload 키 입력 등)를 필요로 해서 background에서는 pub get만 하고 즉시 종료됨. 서버가 안 뜸.
+- **배운 점**: 로컬 dev 서버 실행은 반드시 사용자가 자기 터미널에서 직접. Claude가 background로 못 띄움.
+- **앞으로의 적용**: 사용자가 앱을 실행해서 눈으로 확인해야 할 때는 "터미널에서 이 명령어 실행하세요"라고 안내. 배포된 URL이 있으면 그것을 사용.
+
