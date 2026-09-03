@@ -110,10 +110,10 @@
 ### C-1: Auth
 | ID | 태스크 | DoD | 의존 | 상태 |
 |---|---|---|---|---|
-| T-4A-01 | `user_role.dart` enum 교체 (ceo/manager/staff) | enum 3값, `fromString` 대응 | Step 3 | ⏳ |
-| T-4A-02 | `app_user.dart` 그리팅 문자열 갱신 | "대표님/관리자님/OO님" | T-4A-01 | ⏳ |
-| T-4A-03 | `app_strings.dart` 역할 라벨 갱신 | UI 문자열 반영 | T-4A-01 | ⏳ |
-| T-4A-04 | 회원가입 화면 role 선택 UI 조정 | 3개 옵션 | T-4A-01 | ⏳ |
+| T-4A-01 | `user_role.dart` enum 교체 (ceo/manager/staff) | enum 3값, `fromString` 대응 | Step 3 | ✅ |
+| T-4A-02 | `app_user.dart` 그리팅 문자열 갱신 | "대표님/관리자님/OO님" | T-4A-01 | ✅ |
+| T-4A-03 | `app_strings.dart` 역할 라벨 갱신 | UI 문자열 반영 | T-4A-01 | ✅ |
+| T-4A-04 | 회원가입 화면 role 선택 UI 조정 | 3개 옵션 | T-4A-01 | ✅ |
 
 ### C-2: Departments (projects 폴더 rename)
 | ID | 태스크 | DoD | 의존 | 상태 |
@@ -140,7 +140,7 @@
 ### C-4: Dashboard 역할별 뷰
 | ID | 태스크 | DoD | 의존 | 상태 |
 |---|---|---|---|---|
-| T-4D-01 | Dashboard 역할별 스위칭 로직 | `switch(currentUser.role)` 분기 | T-4A-01 | ⏳ |
+| T-4D-01 | Dashboard 역할별 스위칭 로직 | `switch(currentUser.role)` 분기 | T-4A-01 | ✅ |
 | T-4D-02 | 대표 뷰: 오늘 완료율, 부서별 상태, 지연 요약 | 위젯 3개 이상 | T-4C-*, T-4B-* | ⏳ |
 | T-4D-03 | 관리자 뷰: 자기 부서 상태, 지시한 업무 완료율, 신규 지시 CTA | 위젯 + 버튼 | T-4C-* | ⏳ |
 | T-4D-04 | 직원 뷰: 오늘 내 업무, 이번 주 반복, 미완료 사유 알림 | 위젯 + 알림 배너 | T-4C-* | ⏳ |
@@ -153,7 +153,7 @@
 | T-4F-01 | Memos 브랜딩 문자열 확인/조정 | R&D 잔재 0 | - | ⏳ |
 | T-4G-01 | Activity Logs entity_type 매핑 갱신 (tasks/departments/memos) | 아이콘/라벨 반영 | T-4C-01 | ⏳ |
 | T-4H-01 | Navigation Shell 탭 재구성 (5개: 대시보드/업무/캘린더/메모/설정) | 탭 5개 렌더링 | T-2B-02 | ✅ |
-| T-4H-02 | 관리자 전용 메뉴 (부서 관리/직원 관리/활동 로그) 위치 결정 및 반영 | 관리자 로그인 시 노출 | T-4A-01 | ⏳ |
+| T-4H-02 | 관리자 전용 메뉴 (부서 관리/직원 관리/활동 로그) 위치 결정 및 반영 | 관리자 로그인 시 노출 | T-4A-01 | ✅ |
 | T-4H-03 | SettingsScreen: 다이제스트 수신자 관리 + 발송 시각 설정 | CRUD + TimePicker | Step 3 | ⏳ |
 | T-4I-01 | 하드코딩 문자열 최종 grep + 정리 | R&D/KIMM/한국기계연구원 0 | 위 모두 | ⏳ |
 

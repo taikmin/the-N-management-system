@@ -101,4 +101,37 @@
 
 ---
 
-<!-- 이후 항목은 Step 2, 3, 4 진행 중 추가 -->
+## L-011. 스키마가 있다고 가정하기 전에 반드시 확인
+- **날짜**: 2026-09-03
+- **상황**: Step 3 실행. `hotel_003_tasks_rebuild.sql`은 기존 tasks 테이블에 ALTER를 가하는 방식으로 작성. 실행하니 "tasks 테이블이 없다"는 에러.
+- **발견/문제**: 사용자가 새로 만든 Supabase 프로젝트는 완전히 비어있었음. 나는 "이전에 봤던 rnd-task-manager 프로젝트의 R&D 스키마가 이 새 프로젝트에도 있다"고 잘못 가정. 실제로 스키마는 이전 프로젝트에만 있었고, 새 프로젝트는 auth 스키마만 갖춘 상태.
+- **배운 점**: 다른 환경으로 마이그레이션 SQL을 옮길 때, "무엇이 이미 있는지"를 먼저 확인해야 한다. `SELECT tablename FROM pg_tables WHERE schemaname='public';` 같은 진단 쿼리로 상태를 봤어야 함.
+- **앞으로의 적용**: 스키마 마이그레이션은 두 가지 상태를 모두 지원해야 함 — 기존 스키마 위에 ALTER (upgrade path) vs 빈 DB에 CREATE (fresh install). 최소 CREATE 버전은 항상 준비.
+
+## L-012. Supabase SQL Editor의 auth 컨텍스트는 NULL
+- **날짜**: 2026-09-03
+- **상황**: `is_superadmin(auth.uid())` 같은 RLS 헬퍼 함수를 SQL Editor에서 테스트하면 항상 false 반환.
+- **발견/문제**: SQL Editor는 `postgres` 역할로 실행되어 `auth.uid()`가 NULL. 함수가 NULL 인자를 받아 false. 실제 앱(authenticated user)에서는 정상 동작.
+- **배운 점**: RLS 함수 검증은 SQL Editor에서 `auth.uid()` 없이 명시적 UUID로 하거나, 앱에서 직접 호출해야 함.
+- **앞으로의 적용**: RLS 헬퍼는 반드시 명시적 파라미터를 받게 작성 (예: `is_superadmin(uid UUID)`). 그리고 `prevent_privilege_escalation` 같은 트리거는 `auth.uid()=NULL`인 경우 (SQL Editor / service role) 통과시켜서 부트스트랩·긴급 복구 가능하게.
+
+## L-013. 초기 프로필 트리거는 사용자 생성 시점에 이미 있어야 한다
+- **날짜**: 2026-09-03
+- **상황**: `handle_new_user()` 트리거가 있는데도 `auth.users`에는 계정이 있고 `public.profiles`에는 대응 행이 없는 상태 발생.
+- **발견/문제**: 사용자가 auth.users에 등록된 시점에 트리거가 아직 없었음. 트리거는 이후에 CREATE 되어도, 이미 생성된 사용자에 대해서는 소급 적용 안 됨.
+- **배운 점**: 데이터베이스 초기화 순서: **함수/트리거 먼저 → 사용자 계정 나중**. 반대 순서면 수동으로 backfill 필요.
+- **앞으로의 적용**: 초기 셋업 시 반드시 함수/트리거 먼저 설치. 이미 있는 auth.users에 대해서는 다음 backfill 실행:
+  ```sql
+  INSERT INTO public.profiles (id, email, full_name, role, is_admin)
+  SELECT id, email, split_part(email, '@', 1), 'staff', false
+  FROM auth.users
+  WHERE id NOT IN (SELECT id FROM public.profiles);
+  ```
+
+## L-014. 여러 축으로 나뉜 권한은 명시적 헬퍼로 표현
+- **날짜**: 2026-09-03
+- **상황**: 초기 `is_admin()` 함수가 `is_admin=true OR role IN ('ceo','manager')`로 되어 있어, "시스템 관리자"와 "도메인 관리급"이 섞임. 사용자가 Admin과 CEO/Manager 분리를 원함.
+- **발견/문제**: 하나의 함수가 두 가지 뜻을 가지면, RLS 정책 재배치 시 어떤 정책에 어떤 뜻을 적용할지 헷갈림. 특히 나중에 요구사항이 세분화되면 (예: "CEO는 다이제스트 설정 조회만 가능") 정책 재작성이 힘듦.
+- **배운 점**: 여러 축의 권한 (시스템 축 vs 도메인 축)은 별도의 헬퍼 함수로 분리해서 표현. `is_superadmin`, `is_ceo_or_above`, `is_management` 처럼 각각 다른 축·수준을 명확히 이름 짓기.
+- **앞으로의 적용**: RLS 정책은 헬퍼 함수 이름만 보고 의도를 읽을 수 있어야 함. `is_admin` 같은 애매한 이름 지양.
+

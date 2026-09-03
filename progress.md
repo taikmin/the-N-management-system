@@ -1,6 +1,6 @@
 # The N Resort Management — 진행 현황
 
-> 마지막 업데이트: 2026-09-03
+> 마지막 업데이트: 2026-09-03 (Step 4 C-1 완료)
 
 ---
 
@@ -27,6 +27,16 @@
 ---
 
 ## 진행 중 (🟡)
+
+- ✅ **Step 4 C-1: Auth 역할 교체 완료** (2026-09-03, 커밋 `d88b155`)
+  - UserRole enum: `pi/researcher/external_` → `ceo/manager/staff`
+  - AppUser에 `isSuperadmin/isCeoOrAbove/isManagement` 헬퍼 게터 추가
+  - Register 화면: role 선택 UI 제거, phone 필드 추가
+  - Settings 화면: Zoom 섹션 완전 삭제
+  - Auth Repository/Provider: signUp에 phone 파라미터, isCeoOrAboveProvider/isManagementProvider 추가
+  - app_strings: 호텔 역할 라벨 (대표/관리자/직원/시스템 관리자)
+  - test/widget_test.dart의 AppUser/UserRole 그룹 삭제 (Step 4 완료 후 재작성 예정)
+  - dart analyze: 에러 0
 
 - ✅ **Step 3 — 호텔 스키마 구축 완료** (2026-09-03)
   - hotel_001~010 (총 10개 마이그레이션) Supabase Dashboard에서 실행 완료
@@ -86,7 +96,7 @@
 - ⏳ Supabase Dashboard에서 수동 실행 및 검증
 
 ### Step 4: Flutter 코드 재구성 (우선순위 중)
-- ⏳ C-1: Auth (역할 enum 교체, 그리팅 수정)
+- ✅ C-1: Auth (역할 enum 교체, 그리팅 수정)
 - ⏳ C-2: Departments (projects 폴더 rename + 재정의)
 - ⏳ C-3: Tasks 핵심 개조 (모델, 화면, 보고 시트)
 - ⏳ C-4: Dashboard 역할별 뷰
