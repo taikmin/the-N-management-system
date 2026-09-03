@@ -103,10 +103,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const SizedBox(height: AppSizes.lg),
         ],
 
-        // Zoom 기본값 설정
-        _ZoomDefaultsSection(),
-        const SizedBox(height: AppSizes.lg),
-
         // App Info
         Card(
           child: Column(
@@ -140,185 +136,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         ),
       ],
-    );
-  }
-}
-
-/// Zoom 기본값 설정 섹션
-class _ZoomDefaultsSection
-    extends ConsumerStatefulWidget {
-  @override
-  ConsumerState<_ZoomDefaultsSection> createState() =>
-      _ZoomDefaultsSectionState();
-}
-
-class _ZoomDefaultsSectionState
-    extends ConsumerState<_ZoomDefaultsSection> {
-  final _linkController = TextEditingController();
-  final _idController = TextEditingController();
-  final _passwordController = TextEditingController();
-  bool _initialized = false;
-  bool _saving = false;
-
-  @override
-  void dispose() {
-    _linkController.dispose();
-    _idController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  void _initFromUser() {
-    final user =
-        ref.read(currentUserProvider).valueOrNull;
-    if (user != null && !_initialized) {
-      _linkController.text =
-          user.defaultZoomLink ?? '';
-      _idController.text =
-          user.defaultZoomId ?? '';
-      _passwordController.text =
-          user.defaultZoomPassword ?? '';
-      _initialized = true;
-    }
-  }
-
-  Future<void> _save() async {
-    final user =
-        ref.read(currentUserProvider).valueOrNull;
-    if (user == null) return;
-
-    setState(() => _saving = true);
-    try {
-      final repo = ref.read(authRepositoryProvider);
-      await repo.updateZoomDefaults(
-        userId: user.id,
-        zoomLink:
-            _linkController.text.trim().isNotEmpty
-                ? _linkController.text.trim()
-                : null,
-        zoomId:
-            _idController.text.trim().isNotEmpty
-                ? _idController.text.trim()
-                : null,
-        zoomPassword: _passwordController.text
-                .trim()
-                .isNotEmpty
-            ? _passwordController.text.trim()
-            : null,
-      );
-      ref.read(currentUserProvider.notifier).refresh();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Zoom 기본값이 저장되었습니다')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('저장 오류: $e')),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _saving = false);
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    ref.watch(currentUserProvider);
-    _initFromUser();
-    final theme = Theme.of(context);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSizes.md),
-        child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.videocam, size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  'Zoom 기본값',
-                  style: theme.textTheme.titleSmall
-                      ?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSizes.xs),
-            Text(
-              '비대면 회의 생성 시 자동으로 채워집니다',
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(
-                color:
-                    theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: AppSizes.md),
-            TextField(
-              controller: _linkController,
-              decoration: const InputDecoration(
-                labelText: 'Zoom 링크',
-                prefixIcon: Icon(Icons.link),
-                hintText: 'https://zoom.us/j/...',
-                isDense: true,
-              ),
-            ),
-            const SizedBox(height: AppSizes.sm),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _idController,
-                    decoration:
-                        const InputDecoration(
-                      labelText: '회의 ID',
-                      isDense: true,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: AppSizes.sm),
-                Expanded(
-                  child: TextField(
-                    controller: _passwordController,
-                    decoration:
-                        const InputDecoration(
-                      labelText: '비밀번호',
-                      isDense: true,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSizes.md),
-            Align(
-              alignment: Alignment.centerRight,
-              child: FilledButton.tonalIcon(
-                onPressed: _saving ? null : _save,
-                icon: _saving
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child:
-                            CircularProgressIndicator(
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Icon(Icons.save,
-                        size: 18),
-                label: const Text('저장'),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -419,7 +236,7 @@ class _AdminPanelState extends ConsumerState<_AdminPanel> {
             )
           else
             ...(_users!.map((u) {
-              final role = UserRole.fromString(u['role'] as String? ?? 'researcher');
+              final role = UserRole.fromString(u['role'] as String? ?? 'staff');
               final isAdmin = u['is_admin'] as bool? ?? false;
               return ListTile(
                 dense: true,

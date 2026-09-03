@@ -28,7 +28,7 @@ class AppNavigationShell extends StatelessWidget {
     _NavItem(
       icon: Icons.science_outlined,
       selectedIcon: Icons.science,
-      label: AppStrings.projects,
+      label: AppStrings.departments,
     ),
     _NavItem(
       icon: Icons.task_alt_outlined,

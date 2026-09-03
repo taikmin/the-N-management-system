@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../data/repositories/auth_repository.dart';
-import '../../domain/models/user_role.dart';
 import '../../providers/auth_provider.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -20,10 +19,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final _departmentController = TextEditingController();
+  final _phoneController = TextEditingController();
   bool _obscurePassword = true;
   bool _isSubmitting = false;
-  UserRole _selectedRole = UserRole.researcher;
 
   @override
   void dispose() {
@@ -31,7 +29,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-    _departmentController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -45,10 +43,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             email: _emailController.text.trim(),
             password: _passwordController.text,
             fullName: _nameController.text.trim(),
-            department: _departmentController.text.trim().isNotEmpty
-                ? _departmentController.text.trim()
+            phone: _phoneController.text.trim().isNotEmpty
+                ? _phoneController.text.trim()
                 : null,
-            role: _selectedRole,
           );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -105,8 +102,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
                   const SizedBox(height: AppSizes.xs),
                   Text(
-                    'R&D Task Manager 계정을 생성합니다',
+                    '${AppStrings.appName} 계정을 생성합니다',
                     style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: AppSizes.xs),
+                  Text(
+                    '가입 후 관리자가 부서 배정 및 역할을 지정합니다',
+                    style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
@@ -147,35 +151,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ),
                   const SizedBox(height: AppSizes.md),
 
-                  // Department
+                  // Phone (optional)
                   TextFormField(
-                    controller: _departmentController,
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(
-                      labelText: '${AppStrings.department} (선택)',
-                      prefixIcon: Icon(Icons.business_outlined),
+                      labelText: '${AppStrings.phone} (선택)',
+                      prefixIcon: Icon(Icons.phone_outlined),
                     ),
-                  ),
-                  const SizedBox(height: AppSizes.md),
-
-                  // Role
-                  DropdownButtonFormField<UserRole>(
-                    initialValue: _selectedRole,
-                    decoration: const InputDecoration(
-                      labelText: '역할',
-                      prefixIcon: Icon(Icons.badge_outlined),
-                    ),
-                    items: UserRole.values.map((role) {
-                      return DropdownMenuItem(
-                        value: role,
-                        child: Text(role.label),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setState(() => _selectedRole = value);
-                      }
-                    },
                   ),
                   const SizedBox(height: AppSizes.md),
 

@@ -45,8 +45,8 @@ class CurrentUserNotifier extends AsyncNotifier<AppUser?> {
     required String email,
     required String password,
     required String fullName,
-    String? department,
-    UserRole role = UserRole.researcher,
+    String? phone,
+    UserRole role = UserRole.staff,
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
@@ -55,7 +55,7 @@ class CurrentUserNotifier extends AsyncNotifier<AppUser?> {
         email: email,
         password: password,
         fullName: fullName,
-        department: department,
+        phone: phone,
         role: role,
       );
     });
@@ -83,7 +83,17 @@ final isLoggedInProvider = Provider<bool>((ref) {
   return ref.watch(currentUserProvider).valueOrNull != null;
 });
 
-/// Admin 여부 간편 조회
+/// 시스템 관리자(Admin) 여부
 final isAdminProvider = Provider<bool>((ref) {
-  return ref.watch(currentUserProvider).valueOrNull?.isAdmin ?? false;
+  return ref.watch(currentUserProvider).valueOrNull?.isSuperadmin ?? false;
+});
+
+/// CEO 또는 Admin (인사권/설정 조회)
+final isCeoOrAboveProvider = Provider<bool>((ref) {
+  return ref.watch(currentUserProvider).valueOrNull?.isCeoOrAbove ?? false;
+});
+
+/// 관리급 (Admin/CEO/Manager) — 부서/업무 관리
+final isManagementProvider = Provider<bool>((ref) {
+  return ref.watch(currentUserProvider).valueOrNull?.isManagement ?? false;
 });

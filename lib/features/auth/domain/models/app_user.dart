@@ -6,41 +6,35 @@ class AppUser {
     required this.id,
     required this.email,
     required this.fullName,
-    this.department,
-    this.position,
+    this.phone,
     this.avatarUrl,
-    this.role = UserRole.researcher,
+    this.role = UserRole.staff,
     this.isAdmin = false,
-    this.defaultZoomLink,
-    this.defaultZoomId,
-    this.defaultZoomPassword,
+    this.departmentId,
   });
 
   final String id;
   final String email;
   final String fullName;
-  final String? department;
-  final String? position;
+  final String? phone;
   final String? avatarUrl;
   final UserRole role;
+
+  /// 시스템 관리자 여부 (앱 자체 운영자, role과 별도의 축)
   final bool isAdmin;
-  final String? defaultZoomLink;
-  final String? defaultZoomId;
-  final String? defaultZoomPassword;
+
+  final String? departmentId;
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
     return AppUser(
       id: json['id'] as String,
       email: json['email'] as String? ?? '',
       fullName: json['full_name'] as String? ?? '',
-      department: json['department'] as String?,
-      position: json['position'] as String?,
+      phone: json['phone'] as String?,
       avatarUrl: json['avatar_url'] as String?,
-      role: UserRole.fromString(json['role'] as String? ?? 'researcher'),
+      role: UserRole.fromString(json['role'] as String? ?? 'staff'),
       isAdmin: json['is_admin'] as bool? ?? false,
-      defaultZoomLink: json['default_zoom_link'] as String?,
-      defaultZoomId: json['default_zoom_id'] as String?,
-      defaultZoomPassword: json['default_zoom_password'] as String?,
+      departmentId: json['department_id'] as String?,
     );
   }
 
@@ -49,63 +43,71 @@ class AppUser {
       'id': id,
       'email': email,
       'full_name': fullName,
-      'department': department,
-      'position': position,
+      'phone': phone,
       'avatar_url': avatarUrl,
       'role': role.name,
       'is_admin': isAdmin,
-      'default_zoom_link': defaultZoomLink,
-      'default_zoom_id': defaultZoomId,
-      'default_zoom_password': defaultZoomPassword,
+      'department_id': departmentId,
     };
   }
 
+  /// 환영 문구
   String get greeting {
+    if (isAdmin && role == UserRole.staff) {
+      return '$fullName 관리자님, 환영합니다';
+    }
     switch (role) {
-      case UserRole.pi:
-        return '$fullName 책임연구원님, 환영합니다';
-      case UserRole.researcher:
-        return '$fullName 연구원님, 환영합니다';
-      case UserRole.external_:
+      case UserRole.ceo:
+        return '$fullName 대표님, 환영합니다';
+      case UserRole.manager:
+        return '$fullName 관리자님, 환영합니다';
+      case UserRole.staff:
         return '$fullName님, 환영합니다';
     }
   }
 
-  /// 편집/삭제 권한: 인증된 사용자 모두 가능
-  bool canEdit(String? ownerId) => true;
-  bool canDelete(String? ownerId) => true;
+  /// 역할 표시 라벨 (배지 등에 사용)
+  String get roleDisplay {
+    if (isAdmin) {
+      return role == UserRole.staff ? 'Admin' : 'Admin · ${role.label}';
+    }
+    return role.label;
+  }
+
+  // ─── 권한 헬퍼 (UI에서 사용) ───
+
+  /// 시스템 슈퍼유저 (Admin 전용 화면 접근)
+  bool get isSuperadmin => isAdmin;
+
+  /// CEO 또는 Admin (인사권, 다이제스트 설정 조회)
+  bool get isCeoOrAbove => isAdmin || role == UserRole.ceo;
+
+  /// 관리급 (Admin/CEO/Manager) — 부서/업무 CRUD, 활동 로그 조회
+  bool get isManagement =>
+      isAdmin || role == UserRole.ceo || role == UserRole.manager;
+
+  /// 일반 직원 여부 (관리 권한 없음)
+  bool get isStaffOnly => !isManagement;
 
   AppUser copyWith({
     String? id,
     String? email,
     String? fullName,
-    String? department,
-    String? position,
-    String? avatarUrl,
+    String? Function()? phone,
+    String? Function()? avatarUrl,
     UserRole? role,
     bool? isAdmin,
-    String? Function()? defaultZoomLink,
-    String? Function()? defaultZoomId,
-    String? Function()? defaultZoomPassword,
+    String? Function()? departmentId,
   }) {
     return AppUser(
       id: id ?? this.id,
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
-      department: department ?? this.department,
-      position: position ?? this.position,
-      avatarUrl: avatarUrl ?? this.avatarUrl,
+      phone: phone != null ? phone() : this.phone,
+      avatarUrl: avatarUrl != null ? avatarUrl() : this.avatarUrl,
       role: role ?? this.role,
       isAdmin: isAdmin ?? this.isAdmin,
-      defaultZoomLink: defaultZoomLink != null
-          ? defaultZoomLink()
-          : this.defaultZoomLink,
-      defaultZoomId: defaultZoomId != null
-          ? defaultZoomId()
-          : this.defaultZoomId,
-      defaultZoomPassword: defaultZoomPassword != null
-          ? defaultZoomPassword()
-          : this.defaultZoomPassword,
+      departmentId: departmentId != null ? departmentId() : this.departmentId,
     );
   }
 }

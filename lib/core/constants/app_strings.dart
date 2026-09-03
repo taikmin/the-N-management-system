@@ -12,7 +12,8 @@ class AppStrings {
   static const String password = '비밀번호';
   static const String confirmPassword = '비밀번호 확인';
   static const String fullName = '이름';
-  static const String department = '부서/연구실';
+  static const String department = '부서';
+  static const String phone = '연락처';
   static const String forgotPassword = '비밀번호 찾기';
   static const String noAccount = '계정이 없으신가요?';
   static const String hasAccount = '이미 계정이 있으신가요?';
@@ -20,22 +21,29 @@ class AppStrings {
 
   // Navigation
   static const String dashboard = '대시보드';
-  static const String projects = '과제';
+  static const String departments = '부서';
   static const String tasks = '업무';
-  static const String meetings = '회의';
   static const String calendar = '캘린더';
   static const String memos = '메모';
   static const String settings = '설정';
 
   // Roles
-  static const String rolePi = '과제책임자 (PI)';
-  static const String roleResearcher = '연구원';
-  static const String roleExternal = '외부참여자';
+  static const String roleCeo = '대표';
+  static const String roleManager = '관리자';
+  static const String roleStaff = '직원';
+  static const String roleAdmin = '시스템 관리자';
 
   // Dashboard
   static const String welcomeMessage = '환영합니다';
-  static const String noProjects = '등록된 과제가 없습니다';
-  static const String createFirstProject = '첫 번째 과제를 생성해보세요';
+  static const String noTasks = '등록된 업무가 없습니다';
+  static const String createFirstTask = '첫 번째 업무를 생성해보세요';
+
+  // Task status labels
+  static const String statusAssigned = '지시됨';
+  static const String statusInProgress = '진행중';
+  static const String statusCompleted = '완료';
+  static const String statusIncomplete = '미완료';
+  static const String statusDelayed = '지연';
 
   // Errors
   static const String errorGeneral = '오류가 발생했습니다';

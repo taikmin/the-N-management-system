@@ -74,15 +74,7 @@ class DashboardScreen extends ConsumerWidget {
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
-                            if (user.department != null) ...[
-                              const SizedBox(height: 2),
-                              Text(
-                                user.department!,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
+                            // 부서명은 Step 4-C2에서 department_id로 조회 예정
                           ],
                         ),
                       ),
@@ -281,14 +273,14 @@ class _ProjectsPreview extends ConsumerWidget {
                     ),
                     const SizedBox(height: AppSizes.md),
                     Text(
-                      AppStrings.noProjects,
+                      AppStrings.noTasks,
                       style: theme.textTheme.titleMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: AppSizes.xs),
                     Text(
-                      AppStrings.createFirstProject,
+                      AppStrings.createFirstTask,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant
                             .withValues(alpha: 0.7),

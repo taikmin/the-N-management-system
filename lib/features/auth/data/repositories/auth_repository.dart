@@ -61,16 +61,16 @@ class AuthRepository {
     required String email,
     required String password,
     required String fullName,
-    String? department,
-    UserRole role = UserRole.researcher,
+    String? phone,
+    UserRole role = UserRole.staff,
   }) async {
     final response = await _auth.signUp(
       email: email,
       password: password,
       data: {
         'full_name': fullName,
-        'department': department,
-        'role': role.name,
+        'phone': phone,
+        // role은 서버 측 트리거가 항상 'staff'로 세팅. 관리자/CEO가 이후 승격.
       },
     );
 
@@ -79,7 +79,6 @@ class AuthRepository {
     }
 
     // profiles는 handle_new_user() 트리거(SECURITY DEFINER)가 자동 생성
-    // 세션이 있으면 DB에서 프로필 조회, 없으면 입력값으로 반환
     if (response.session != null) {
       return getProfile(response.user!.id);
     }
@@ -88,7 +87,7 @@ class AuthRepository {
       id: response.user!.id,
       email: email,
       fullName: fullName,
-      department: department,
+      phone: phone,
       role: role,
     );
   }
@@ -145,7 +144,7 @@ class AuthRepository {
         fullName:
             user?.userMetadata?['full_name'] as String? ?? '사용자',
         role: UserRole.fromString(
-          user?.userMetadata?['role'] as String? ?? 'researcher',
+          user?.userMetadata?['role'] as String? ?? 'staff',
         ),
         isAdmin: isAdmin,
       );
@@ -169,18 +168,11 @@ class AuthRepository {
         .update({'role': role.name}).eq('id', userId);
   }
 
-  /// Zoom 기본값 업데이트
-  Future<void> updateZoomDefaults({
-    required String userId,
-    String? zoomLink,
-    String? zoomId,
-    String? zoomPassword,
-  }) async {
-    await _client.from('profiles').update({
-      'default_zoom_link': zoomLink,
-      'default_zoom_id': zoomId,
-      'default_zoom_password': zoomPassword,
-    }).eq('id', userId);
+  /// [Admin] 사용자 부서 배정
+  Future<void> updateUserDepartment(String userId, String? departmentId) async {
+    await _client
+        .from('profiles')
+        .update({'department_id': departmentId}).eq('id', userId);
   }
 
   /// [Admin] 모든 사용자 목록 조회
