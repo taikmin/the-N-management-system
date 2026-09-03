@@ -28,6 +28,7 @@ ALTER TABLE public.profiles DROP COLUMN IF EXISTS position;
 -- 5. 신규 필드 추가 (기존 department 문자열은 유지하되 다음 마이그레이션에서 department_id로 이관)
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS phone TEXT;
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS department_id UUID;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT false;
 -- FK 제약은 departments 테이블 생성 후 hotel_002에서 추가
 
 -- 6. 기존 department 문자열 컬럼은 마이그레이션 종료 시점에 삭제

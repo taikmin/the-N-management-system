@@ -28,13 +28,20 @@
 
 ## 진행 중 (🟡)
 
-- 🟡 **Step 3 — 호텔 스키마 SQL 작성 완료, Supabase 수동 실행 대기**
-  - ✅ 9개 SQL 파일 작성: `supabase/migrations/hotel_001` ~ `hotel_009.sql`
-  - ✅ `docs/schema-migration-guide.md` 실행 절차 문서 작성
-  - ⏳ **사용자가 Supabase Dashboard에서 순차 실행 필요** (T-3B-02)
-  - ⏳ Resend API 키 실제 값으로 교체 (T-3B-04)
-  - ⏳ 다이제스트 수신자 등록
-  - ⏳ 발송 테스트 (T-3B-05, T-3B-06)
+- ✅ **Step 3 — 호텔 스키마 구축 완료** (2026-09-03)
+  - hotel_001~010 (총 10개 마이그레이션) Supabase Dashboard에서 실행 완료
+  - 실행 중 발견/해결:
+    - 신 프로젝트라 R&D 스키마가 없어 hotel_003을 ALTER→CREATE로 재작성 (`hotel_003_tables_create.sql`)
+    - hotel_005/006은 삭제할 R&D 테이블 없어 스킵
+    - profiles.is_admin 컬럼 누락 → hotel_001에 추가
+    - Admin/CEO/Manager/Staff 4단계 권한 분리 (`hotel_010_admin_separation.sql` 신규 작성)
+    - `prevent_privilege_escalation` 트리거에 SQL Editor bypass 로직 추가
+  - lee.taikmin@gmail.com 계정을 `is_admin=true, role='manager'`로 승격
+  - 헬퍼 함수 검증 완료 (is_superadmin/is_ceo_or_above/is_management 모두 true)
+  - ⏳ 남은 후속 (Step 4 진행 중 또는 완료 후):
+    - Resend API 키 실제 값으로 교체 (Dashboard에서)
+    - 다이제스트 수신자 등록
+    - 이메일 발송 테스트
 
 - 🟡 **Step 1 + Step 2A** — 문서 스캐폴딩 + R&D 잔재 부분 삭제 완료, 커밋 대기 중
   - Step 1: `plan/progress/task/lessons/README/CLAUDE.md` 6개 완료

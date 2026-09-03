@@ -91,17 +91,17 @@
 |---|---|---|---|---|
 | T-3B-01 | 사용자에게 SQL 파일 순차 실행 안내 문서 (`docs/schema-migration-guide.md`) | 문서 존재 | T-3A-01~09 | ✅ |
 | T-3B-02 | Supabase Dashboard에서 SQL 순차 실행 (사용자 수행) | 모든 테이블/함수/cron 존재 | T-3B-01 | ✅ |
-| T-3B-03 | Storage 버킷 생성 (`task-photos` 또는 재사용) | 버킷 존재 | T-3B-02 | ⏳ |
-| T-3B-04 | RESEND_API_KEY를 Supabase Vault 또는 SQL 함수에 설정 | send_daily_digest 실행 시 이메일 발송 성공 | T-3B-02 | ⏳ |
-| T-3B-05 | `send_daily_digest()` 수동 호출 → 이메일 수신 확인 | 대표 이메일 수신 | T-3B-04 | ⏳ |
-| T-3B-06 | `generate_recurring_tasks()` 수동 호출 → 인스턴스 생성 확인 | 반복 템플릿의 인스턴스 존재 | T-3B-02 | ⏳ |
+| T-3B-03 | Storage 버킷 생성 (`task-photos` 또는 재사용) | 버킷 존재 | T-3B-02 | ✅ |
+| T-3B-04 | RESEND_API_KEY를 Supabase Vault 또는 SQL 함수에 설정 | send_daily_digest 실행 시 이메일 발송 성공 | T-3B-02 | ✅ |
+| T-3B-05 | `send_daily_digest()` 수동 호출 → 이메일 수신 확인 | 대표 이메일 수신 | T-3B-04 | ✅ |
+| T-3B-06 | `generate_recurring_tasks()` 수동 호출 → 인스턴스 생성 확인 | 반복 템플릿의 인스턴스 존재 | T-3B-02 | ✅ |
 
 ### Step 3 마무리
 | ID | 태스크 | DoD | 의존 | 상태 |
 |---|---|---|---|---|
-| T-3Z-01 | Step 3 커밋 & push | conv commits | 위 모두 | ⏳ |
-| T-3Z-02 | `progress.md` 갱신 | Step 3 완료 표시 | - | ⏳ |
-| T-3Z-03 | `lessons.md`에 Step 3 교훈 추가 | - | - | ⏳ |
+| T-3Z-01 | Step 3 커밋 & push | conv commits | 위 모두 | ✅ |
+| T-3Z-02 | `progress.md` 갱신 | Step 3 완료 표시 | - | ✅ |
+| T-3Z-03 | `lessons.md`에 Step 3 교훈 추가 | - | - | ✅ |
 
 ---
 
