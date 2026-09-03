@@ -2,8 +2,6 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../app/supabase_config.dart';
-import '../../projects/domain/models/project.dart';
-import '../../projects/providers/project_provider.dart';
 import '../data/repositories/task_repository.dart';
 import '../domain/models/daily_log.dart';
 import '../domain/models/task.dart';
@@ -569,10 +567,11 @@ final groupedTasksProvider =
   });
 });
 
-/// 과제 목록 (태스크 생성 시 드롭다운용)
+/// TODO(Step 4 C-3): task_create_screen 재작성 시 departmentListProvider 직접 사용
+/// 임시 stub — 기존 화면이 참조 중이라 컴파일용
 final projectsForDropdownProvider =
-    Provider<AsyncValue<List<Project>>>((ref) {
-  return ref.watch(projectListProvider);
+    Provider<AsyncValue<List<dynamic>>>((ref) {
+  return const AsyncValue.data(<dynamic>[]);
 });
 
 // ─── 기존 유지 ───

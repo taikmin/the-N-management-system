@@ -1,6 +1,6 @@
 # The N Resort Management — 진행 현황
 
-> 마지막 업데이트: 2026-09-03 (Step 4 C-1 완료)
+> 마지막 업데이트: 2026-09-03 (Step 4 C-2 완료)
 
 ---
 
@@ -27,6 +27,19 @@
 ---
 
 ## 진행 중 (🟡)
+
+- ✅ **Step 4 C-2: Departments 신설** (2026-09-03)
+  - `lib/features/projects/` → `lib/features/departments/` 폴더 및 파일 rename (git mv)
+  - Department 모델 신규 작성 (id/name/description/color/leadId/sortOrder)
+  - DepartmentRepository CRUD + getMembers/getTaskStats
+  - DepartmentListNotifier (Realtime 구독), detail/members/taskStats providers
+  - DepartmentListScreen (관리자만 FAB 노출), DepartmentDetailScreen (팀장·통계·소속직원 카드 + 관리자만 편집/삭제), DepartmentCreateScreen (색상 팔레트 8종)
+  - DepartmentCard 위젯 재작성
+  - router.dart: /projects → /departments 라우트, 중첩 projects/tasks 라우트 제거
+  - calendar_provider: project 소스 제거, 임시 stub 유지 (Task 재구성 후 C-5에서 정리)
+  - dashboard_screen: _ProjectsPreview 삭제, _DashboardStats에서 "진행중 과제" 카드 제거
+  - test/widget_test.dart: Project 그룹 삭제
+  - dart analyze: 에러 0
 
 - ✅ **Step 4 C-1: Auth 역할 교체 완료** (2026-09-03, 커밋 `d88b155`)
   - UserRole enum: `pi/researcher/external_` → `ceo/manager/staff`
@@ -97,7 +110,7 @@
 
 ### Step 4: Flutter 코드 재구성 (우선순위 중)
 - ✅ C-1: Auth (역할 enum 교체, 그리팅 수정)
-- ⏳ C-2: Departments (projects 폴더 rename + 재정의)
+- ✅ C-2: Departments (projects 폴더 rename + 재정의)
 - ⏳ C-3: Tasks 핵심 개조 (모델, 화면, 보고 시트)
 - ⏳ C-4: Dashboard 역할별 뷰
 - ⏳ C-5: Calendar (이벤트 소스 정리)

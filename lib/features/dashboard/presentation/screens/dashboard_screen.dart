@@ -9,7 +9,7 @@ import '../../../activity/providers/activity_provider.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../../calendar/providers/calendar_provider.dart';
 import '../../../memos/providers/memo_provider.dart';
-import '../../../projects/providers/project_provider.dart';
+
 import '../../../tasks/providers/task_provider.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -105,10 +105,6 @@ class DashboardScreen extends ConsumerWidget {
 
               // 최근 메모
               _RecentMemosPreview(),
-              const SizedBox(height: AppSizes.lg),
-
-              // 과제 목록 또는 빈 상태
-              _ProjectsPreview(),
             ],
           ),
         );
@@ -122,17 +118,11 @@ class DashboardScreen extends ConsumerWidget {
 
 }
 
-/// 실시간 통계 위젯
+/// 실시간 통계 위젯 (Step 4 C-3에서 호텔 업무 기반으로 재작성 예정)
 class _DashboardStats extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final projectsAsync = ref.watch(projectListProvider);
     final allTasksAsync = ref.watch(allMyTasksProvider);
-
-    final activeProjects = projectsAsync.valueOrNull
-            ?.where((p) => p.status.name == 'active')
-            .length ??
-        0;
     final tasks = allTasksAsync.valueOrNull ?? [];
     final myTaskCount =
         tasks.where((t) => t.status.name != 'completed').length;
@@ -142,7 +132,7 @@ class _DashboardStats extends ConsumerWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final crossAxisCount = constraints.maxWidth > 600 ? 4 : 2;
+        final crossAxisCount = constraints.maxWidth > 600 ? 3 : 3;
         return GridView.count(
           crossAxisCount: crossAxisCount,
           shrinkWrap: true,
@@ -152,19 +142,13 @@ class _DashboardStats extends ConsumerWidget {
           childAspectRatio: 1.6,
           children: [
             _StatCard(
-              title: '진행중 과제',
-              value: '$activeProjects',
-              icon: Icons.science_outlined,
-              color: AppColors.inProgress,
-            ),
-            _StatCard(
               title: '내 업무',
               value: '$myTaskCount',
               icon: Icons.task_alt_outlined,
               color: AppColors.info,
             ),
             _StatCard(
-              title: '지연/마감임박',
+              title: '지연',
               value: '$delayedCount',
               icon: Icons.schedule_outlined,
               color: delayedCount > 0 ? AppColors.error : AppColors.warning,
@@ -245,110 +229,6 @@ class _ThisWeekSchedule extends ConsumerWidget {
     );
   }
 }
-
-/// 과제 미리보기 또는 빈 상태
-class _ProjectsPreview extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final projectsAsync = ref.watch(projectListProvider);
-    final theme = Theme.of(context);
-
-    return projectsAsync.when(
-      data: (projects) {
-        if (projects.isEmpty) {
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: AppSizes.xxl,
-                horizontal: AppSizes.lg,
-              ),
-              child: Center(
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.folder_open_outlined,
-                      size: 64,
-                      color: theme.colorScheme.onSurfaceVariant
-                          .withValues(alpha: 0.5),
-                    ),
-                    const SizedBox(height: AppSizes.md),
-                    Text(
-                      AppStrings.noTasks,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: AppSizes.xs),
-                    Text(
-                      AppStrings.createFirstTask,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant
-                            .withValues(alpha: 0.7),
-                      ),
-                    ),
-                    const SizedBox(height: AppSizes.lg),
-                    FilledButton.icon(
-                      onPressed: () => context.push('/projects/create'),
-                      icon: const Icon(Icons.add),
-                      label: const Text('새 과제 생성'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }
-
-        // 최근 과제 3개만 표시
-        final recent = projects.take(3).toList();
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '최근 과제',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => context.go('/projects'),
-                  child: const Text('전체 보기'),
-                ),
-              ],
-            ),
-            ...recent.map((p) => Card(
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor:
-                          theme.colorScheme.primaryContainer,
-                      child: const Icon(Icons.science_outlined),
-                    ),
-                    title: Text(p.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                    subtitle: Text(
-                      [
-                        p.status.label,
-                        if (p.ownerName != null)
-                          p.ownerName!,
-                        if (p.daysRemaining != null)
-                          'D-${p.daysRemaining}',
-                      ].join(' · '),
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => context.push('/projects/${p.id}'),
-                  ),
-                )),
-          ],
-        );
-      },
-      loading: () => const SizedBox.shrink(),
-      error: (_, _) => const SizedBox.shrink(),
-    );
-  }
-}
-
 /// 최근 메모 미리보기
 class _RecentMemosPreview extends ConsumerWidget {
   @override

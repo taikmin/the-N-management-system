@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:hotel_management/core/constants/app_strings.dart';
-import 'package:hotel_management/features/projects/domain/models/project.dart';
 import 'package:hotel_management/features/tasks/domain/models/task.dart';
 import 'package:hotel_management/features/tasks/domain/models/daily_log.dart';
 import 'package:hotel_management/features/tasks/domain/models/task_comment.dart';
@@ -12,89 +11,6 @@ void main() {
   // ─── Auth Models ───
 
 
-  group('Project', () {
-    test('should create from JSON', () {
-      final json = {
-        'id': 'proj-1',
-        'title': '로봇 제어 시스템 연구',
-        'project_number': '2026-R-001',
-        'status': 'active',
-        'start_date': '2026-01-01',
-        'end_date': '2026-12-31',
-        'total_budget': 500000000,
-        'owner_id': 'user-1',
-        'lead_institution': '한국기계연구원',
-        'co_institutions': ['서울대학교', 'KAIST'],
-        'profiles': {'full_name': '박철훈'},
-      };
-
-      final project = Project.fromJson(json);
-
-      expect(project.id, 'proj-1');
-      expect(project.title, '로봇 제어 시스템 연구');
-      expect(project.projectNumber, '2026-R-001');
-      expect(project.status, ProjectStatus.active);
-      expect(project.totalBudget, 500000000);
-      expect(project.ownerName, '박철훈');
-      expect(project.coInstitutions.length, 2);
-    });
-
-    test('should display budget correctly', () {
-      const p1 = Project(
-        id: '1',
-        title: 't',
-        ownerId: 'u',
-        totalBudget: 500000000,
-      );
-      expect(p1.budgetDisplay, '5.0억원');
-
-      const p2 = Project(
-        id: '2',
-        title: 't',
-        ownerId: 'u',
-        totalBudget: 50000000,
-      );
-      expect(p2.budgetDisplay, '5000만원');
-
-      const p3 = Project(id: '3', title: 't', ownerId: 'u', totalBudget: 5000);
-      expect(p3.budgetDisplay, '5000원');
-    });
-
-    test('should calculate progress by date', () {
-      final p = Project(
-        id: '1',
-        title: 't',
-        ownerId: 'u',
-        startDate: DateTime.now().subtract(const Duration(days: 50)),
-        endDate: DateTime.now().add(const Duration(days: 50)),
-      );
-      expect(p.progressByDate, closeTo(0.5, 0.05));
-    });
-
-    test('should parse all status values', () {
-      expect(ProjectStatus.fromString('planning'), ProjectStatus.planning);
-      expect(ProjectStatus.fromString('active'), ProjectStatus.active);
-      expect(ProjectStatus.fromString('completed'), ProjectStatus.completed);
-      expect(ProjectStatus.fromString('on_hold'), ProjectStatus.onHold);
-      expect(ProjectStatus.fromString('cancelled'), ProjectStatus.cancelled);
-      expect(ProjectStatus.fromString('unknown'), ProjectStatus.planning);
-    });
-
-    test('should produce correct toInsertJson', () {
-      final p = Project(
-        id: '1',
-        title: '테스트 과제',
-        projectNumber: '2026-T-001',
-        ownerId: 'user-1',
-        status: ProjectStatus.active,
-        totalBudget: 100000000,
-      );
-      final json = p.toInsertJson();
-      expect(json['title'], '테스트 과제');
-      expect(json['owner_id'], 'user-1');
-      expect(json['status'], 'active');
-    });
-  });
 
   // ─── Task Model ───
 

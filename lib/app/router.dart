@@ -7,11 +7,11 @@ import '../features/auth/presentation/screens/register_screen.dart';
 import '../features/auth/providers/auth_provider.dart';
 import '../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../features/dashboard/presentation/screens/settings_screen.dart';
-import '../features/projects/presentation/screens/project_create_screen.dart';
-import '../features/projects/presentation/screens/project_detail_screen.dart';
-import '../features/projects/presentation/screens/project_list_screen.dart';
+import '../features/departments/domain/models/department.dart';
+import '../features/departments/presentation/screens/department_create_screen.dart';
+import '../features/departments/presentation/screens/department_detail_screen.dart';
+import '../features/departments/presentation/screens/department_list_screen.dart';
 import '../features/calendar/presentation/screens/calendar_screen.dart';
-import '../features/projects/providers/project_provider.dart';
 import '../features/tasks/presentation/screens/task_create_screen.dart';
 import '../features/tasks/presentation/screens/task_detail_screen.dart';
 import '../features/memos/presentation/screens/memo_detail_screen.dart';
@@ -31,28 +31,24 @@ final routerProvider = Provider<GoRouter>((ref) {
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/dashboard',
     redirect: (context, state) {
-      final loggingIn =
-          state.matchedLocation == '/login' ||
-              state.matchedLocation == '/register';
+      final loggingIn = state.matchedLocation == '/login' ||
+          state.matchedLocation == '/register';
 
       if (!isLoggedIn && !loggingIn) return '/login';
       if (isLoggedIn && loggingIn) return '/dashboard';
       return null;
     },
     routes: [
-      // Auth routes (no shell)
       GoRoute(
         path: '/login',
-        builder: (context, state) =>
-            const LoginScreen(),
+        builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: '/register',
-        builder: (context, state) =>
-            const RegisterScreen(),
+        builder: (context, state) => const RegisterScreen(),
       ),
 
-      // Main app routes (with navigation shell)
+      // Main app routes with shell navigation
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) {
@@ -62,74 +58,54 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/dashboard',
             pageBuilder: (context, state) =>
-                const NoTransitionPage(
-              child: DashboardScreen(),
-            ),
+                const NoTransitionPage(child: DashboardScreen()),
           ),
           GoRoute(
-            path: '/projects',
+            path: '/departments',
             pageBuilder: (context, state) =>
-                const NoTransitionPage(
-              child: ProjectListScreen(),
-            ),
+                const NoTransitionPage(child: DepartmentListScreen()),
           ),
           GoRoute(
             path: '/tasks',
             pageBuilder: (context, state) =>
-                const NoTransitionPage(
-              child: TaskListScreen(),
-            ),
+                const NoTransitionPage(child: TaskListScreen()),
           ),
           GoRoute(
             path: '/calendar',
             pageBuilder: (context, state) =>
-                const NoTransitionPage(
-              child: CalendarScreen(),
-            ),
+                const NoTransitionPage(child: CalendarScreen()),
           ),
           GoRoute(
             path: '/memos',
             pageBuilder: (context, state) =>
-                const NoTransitionPage(
-              child: MemoListScreen(),
-            ),
+                const NoTransitionPage(child: MemoListScreen()),
           ),
           GoRoute(
             path: '/settings',
             pageBuilder: (context, state) =>
-                const NoTransitionPage(
-              child: SettingsScreen(),
-            ),
+                const NoTransitionPage(child: SettingsScreen()),
           ),
         ],
       ),
 
-      // ─── Activity log route ───
+      // Activity log
       GoRoute(
         path: '/activity',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) =>
-            const ActivityLogScreen(),
+        builder: (context, state) => const ActivityLogScreen(),
       ),
 
       // ─── Task standalone routes ───
       GoRoute(
         path: '/tasks/create',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) {
-          final parentTaskId =
-              state.uri.queryParameters['parent'];
-          return TaskCreateScreen(
-            parentTaskId: parentTaskId,
-          );
-        },
+        builder: (context, state) => const TaskCreateScreen(),
       ),
       GoRoute(
         path: '/tasks/:taskId',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
-          final taskId =
-              state.pathParameters['taskId']!;
+          final taskId = state.pathParameters['taskId']!;
           return TaskDetailScreen(taskId: taskId);
         },
         routes: [
@@ -137,89 +113,36 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: 'edit',
             parentNavigatorKey: _rootNavigatorKey,
             builder: (context, state) {
-              final taskId = state
-                  .pathParameters['taskId']!;
-              return _StandaloneTaskEditLoader(
-                taskId: taskId,
-              );
+              final taskId = state.pathParameters['taskId']!;
+              return _TaskEditLoader(taskId: taskId);
             },
           ),
         ],
       ),
 
-      // ─── Project routes ───
+      // ─── Department routes ───
       GoRoute(
-        path: '/projects/create',
+        path: '/departments/create',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) =>
-            const ProjectCreateScreen(),
+        builder: (context, state) => const DepartmentCreateScreen(),
       ),
       GoRoute(
-        path: '/projects/:projectId',
+        path: '/departments/:departmentId',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
-          final projectId =
-              state.pathParameters['projectId']!;
-          return ProjectDetailScreen(
-            projectId: projectId,
-          );
+          final id = state.pathParameters['departmentId']!;
+          return DepartmentDetailScreen(departmentId: id);
         },
         routes: [
           GoRoute(
             path: 'edit',
             parentNavigatorKey: _rootNavigatorKey,
             builder: (context, state) {
-              final projectId = state
-                  .pathParameters['projectId']!;
-              return _ProjectEditLoader(
-                projectId: projectId,
+              final extra = state.extra;
+              return DepartmentCreateScreen(
+                department: extra is Department ? extra : null,
               );
             },
-          ),
-          GoRoute(
-            path: 'tasks/create',
-            parentNavigatorKey: _rootNavigatorKey,
-            builder: (context, state) {
-              final projectId = state
-                  .pathParameters['projectId']!;
-              final parentTaskId = state
-                  .uri.queryParameters['parent'];
-              return TaskCreateScreen(
-                projectId: projectId,
-                parentTaskId: parentTaskId,
-              );
-            },
-          ),
-          GoRoute(
-            path: 'tasks/:taskId',
-            parentNavigatorKey: _rootNavigatorKey,
-            builder: (context, state) {
-              final projectId = state
-                  .pathParameters['projectId']!;
-              final taskId = state
-                  .pathParameters['taskId']!;
-              return TaskDetailScreen(
-                projectId: projectId,
-                taskId: taskId,
-              );
-            },
-            routes: [
-              GoRoute(
-                path: 'edit',
-                parentNavigatorKey:
-                    _rootNavigatorKey,
-                builder: (context, state) {
-                  final projectId = state
-                      .pathParameters['projectId']!;
-                  final taskId = state
-                      .pathParameters['taskId']!;
-                  return _TaskEditLoader(
-                    projectId: projectId,
-                    taskId: taskId,
-                  );
-                },
-              ),
-            ],
           ),
         ],
       ),
@@ -228,15 +151,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/memos/create',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) =>
-            const MemoDetailScreen(),
+        builder: (context, state) => const MemoDetailScreen(),
       ),
       GoRoute(
         path: '/memos/:memoId',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) {
-          final memoId =
-              state.pathParameters['memoId']!;
+          final memoId = state.pathParameters['memoId']!;
           return MemoDetailScreen(memoId: memoId);
         },
       ),
@@ -244,73 +165,14 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-/// 과제 수정 로더 (과제 데이터를 로드해서 ProjectCreateScreen에 전달)
-class _ProjectEditLoader extends ConsumerWidget {
-  const _ProjectEditLoader({
-    required this.projectId,
-  });
-  final String projectId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final projectAsync =
-        ref.watch(projectDetailProvider(projectId));
-
-    return projectAsync.when(
-      data: (project) =>
-          ProjectCreateScreen(project: project),
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
-      error: (e, _) => Scaffold(
-        appBar: AppBar(),
-        body: Center(child: Text('오류: $e')),
-      ),
-    );
-  }
-}
-
-/// 태스크 수정 로더 (태스크 데이터를 로드해서 TaskCreateScreen에 전달)
+/// 태스크 수정 로더
 class _TaskEditLoader extends ConsumerWidget {
-  const _TaskEditLoader({
-    required this.projectId,
-    required this.taskId,
-  });
-  final String projectId;
+  const _TaskEditLoader({required this.taskId});
   final String taskId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final taskAsync =
-        ref.watch(taskDetailProvider(taskId));
-
-    return taskAsync.when(
-      data: (task) => TaskCreateScreen(
-        projectId: projectId,
-        task: task,
-      ),
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
-      error: (e, _) => Scaffold(
-        appBar: AppBar(),
-        body: Center(child: Text('오류: $e')),
-      ),
-    );
-  }
-}
-
-/// 독립 태스크 수정 로더
-class _StandaloneTaskEditLoader extends ConsumerWidget {
-  const _StandaloneTaskEditLoader({
-    required this.taskId,
-  });
-  final String taskId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final taskAsync =
-        ref.watch(taskDetailProvider(taskId));
+    final taskAsync = ref.watch(taskDetailProvider(taskId));
 
     return taskAsync.when(
       data: (task) => TaskCreateScreen(task: task),
@@ -333,7 +195,7 @@ class _ShellWithNav extends ConsumerWidget {
 
   static const _paths = [
     '/dashboard',
-    '/projects',
+    '/departments',
     '/tasks',
     '/calendar',
     '/memos',
@@ -342,11 +204,8 @@ class _ShellWithNav extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final location =
-        GoRouterState.of(context).matchedLocation;
-    final currentIndex = _paths
-        .indexOf(location)
-        .clamp(0, _paths.length - 1);
+    final location = GoRouterState.of(context).matchedLocation;
+    final currentIndex = _paths.indexOf(location).clamp(0, _paths.length - 1);
 
     return AppNavigationShell(
       currentIndex: currentIndex,

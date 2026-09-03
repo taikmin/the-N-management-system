@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
-import '../../../projects/providers/project_provider.dart';
 import '../../domain/models/calendar_event.dart';
 import '../../providers/calendar_provider.dart';
 

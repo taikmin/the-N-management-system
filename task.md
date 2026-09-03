@@ -118,12 +118,12 @@
 ### C-2: Departments (projects 폴더 rename)
 | ID | 태스크 | DoD | 의존 | 상태 |
 |---|---|---|---|---|
-| T-4B-01 | `lib/features/projects/` → `lib/features/departments/` 폴더 rename | 폴더명 변경, 파일명도 department_* 로 변경 | Step 3 | ⏳ |
-| T-4B-02 | Project 모델 → Department 모델 (필드 단순화) | Department 클래스, 필드: id/name/description/color/leadId | T-4B-01 | ⏳ |
-| T-4B-03 | Repository/Provider 수정 (departmentListProvider 등) | 새 스키마 반영 | T-4B-02 | ⏳ |
-| T-4B-04 | DepartmentListScreen, DepartmentDetailScreen, DepartmentCreateScreen 재작성 | UI 최소 CRUD | T-4B-02 | ⏳ |
-| T-4B-05 | 라우트 추가 `/departments`, `/departments/:id` (관리자 전용) | 라우터 반영, 가드 | T-4B-04 | ⏳ |
-| T-4B-06 | 모든 `import 'projects/'` → `import 'departments/'` 갱신 | grep 확인 | 위 모두 | ⏳ |
+| T-4B-01 | `lib/features/projects/` → `lib/features/departments/` 폴더 rename | 폴더명 변경, 파일명도 department_* 로 변경 | Step 3 | ✅ |
+| T-4B-02 | Project 모델 → Department 모델 (필드 단순화) | Department 클래스, 필드: id/name/description/color/leadId | T-4B-01 | ✅ |
+| T-4B-03 | Repository/Provider 수정 (departmentListProvider 등) | 새 스키마 반영 | T-4B-02 | ✅ |
+| T-4B-04 | DepartmentListScreen, DepartmentDetailScreen, DepartmentCreateScreen 재작성 | UI 최소 CRUD | T-4B-02 | ✅ |
+| T-4B-05 | 라우트 추가 `/departments`, `/departments/:id` (관리자 전용) | 라우터 반영, 가드 | T-4B-04 | ✅ |
+| T-4B-06 | 모든 `import 'projects/'` → `import 'departments/'` 갱신 | grep 확인 | 위 모두 | ✅ |
 
 ### C-3: Tasks 핵심 개조
 | ID | 태스크 | DoD | 의존 | 상태 |
