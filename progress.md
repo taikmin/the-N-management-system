@@ -1,6 +1,6 @@
 # The N Resort Management — 진행 현황
 
-> 마지막 업데이트: 2026-09-03 (Step 4 전체 완료)
+> 마지막 업데이트: 2026-09-03 (Step 4 전체 완료 · 다음 세션은 Vercel 배포부터)
 
 ---
 
@@ -158,6 +158,43 @@
 - ⏳ 스크린샷 촬영 (`docs/screenshots/`)
 - ⏳ README.md 최종 갱신 (실제 구현 반영)
 - ⏳ 로컬 폴더명 오타 수정 (`magnagement` → `management`, 세션 종료 후 수동)
+
+---
+
+## 다음 세션 우선순위 (Demo 준비)
+
+**목표**: 사용자님이 다른 노트북에서 데모를 할 수 있도록 배포.
+
+### 1순위: Vercel 배포 (실 사용/데모용)
+- 로컬에서 `vercel login`
+- `flutter build web --release`
+- `vercel --prod` → URL 부여받기 (예: `https://the-n-resort.vercel.app`)
+- (선택) Vercel Dashboard에서 GitHub 저장소 연결 → 자동 재배포
+
+배포 후엔 어떤 컴퓨터/폰이든 그 URL로 접속하면 바로 사용 가능. Flutter 설치 불필요.
+
+### 2순위: Supabase 후속 (이메일 실동작)
+- Dashboard → Database → Functions → `send_daily_digest` → 함수 내 `Bearer YOUR_RESEND_API_KEY_HERE`를 실제 Resend 키로 교체
+- SQL로 다이제스트 수신자 등록:
+  ```sql
+  INSERT INTO public.digest_recipients (email, label, is_active)
+  VALUES ('lee.taikmin@gmail.com', '대표', true);
+  ```
+- (선택) `SELECT send_daily_digest();` 수동 실행해서 발송 테스트
+
+### 3순위: 실제 앱 동작 확인 (배포 후)
+- 관리자로 로그인
+- 부서 추가 (이미 5개 기본 seed)
+- 업무 지시 → 반복 패턴 UI 확인
+- 직원 계정 하나 만들어 상호작용 테스트
+
+### 4순위 (선택): 참고 자료 정리 (Step 2B)
+- `supabase/migrations/` R&D 원본 SQL 삭제 (hotel_*.sql만 남김)
+- `supabase/functions/send-activity-digest/` 삭제
+- `docs/database-schema.md`, `docs/architecture.md`, `docs/activity-digest-setup.md`, `docs/daily-log/` 삭제
+
+### 5순위 (선택): 폴더명 오타 수정
+- `the-N-magnagement-system` → `the-N-management-system` (Claude Code 세션 종료 후 수동)
 
 ---
 
