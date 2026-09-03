@@ -1,0 +1,70 @@
+name: rd_task_manager
+description: "KIMM R&D 과제 통합 관리 앱"
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.2.1
+
+  # State Management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Routing
+  go_router: ^14.8.1
+
+  # Backend
+  supabase_flutter: ^2.8.4
+
+  # Data Models
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+
+  # Local Storage
+  shared_preferences: ^2.5.3
+
+  # Calendar
+  table_calendar: ^3.2.0
+
+  # File & URL
+  file_picker: ^8.1.7
+  url_launcher: ^6.3.1
+
+  # HTTP
+  http: ^1.2.1
+
+  # Utilities
+  flutter_dotenv: ^5.2.1
+  intl: ^0.20.2
+  gap: ^3.0.1
+  flutter_svg: ^2.0.17
+  web: ^1.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  # Code Generation
+  build_runner: ^2.4.15
+  freezed: ^2.5.8
+  json_serializable: ^6.9.5
+  riverpod_generator: ^2.6.3
+
+  # Testing
+  mockito: ^5.4.6
+  build_runner_core: ^8.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - .env
