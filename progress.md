@@ -1,6 +1,6 @@
 # The N Resort Management — 진행 현황
 
-> 마지막 업데이트: 2026-09-03 (Step 4 C-3 완료)
+> 마지막 업데이트: 2026-09-03 (Step 4 C-4 완료)
 
 ---
 
@@ -27,6 +27,16 @@
 ---
 
 ## 진행 중 (🟡)
+
+- ✅ **Step 4 C-4: Dashboard 역할별 뷰** (2026-09-03)
+  - DashboardScreen을 역할별 3가지 뷰로 분기
+  - **_CeoDashboard** (Admin + CEO): 오늘 완료율 프로그레스 카드, 부서별 상태 그리드(탭 → 부서 상세), 지연 업무 리스트, 최근 활동 패널
+  - **_ManagerDashboard**: 신규 지시 CTA 버튼, 우리 부서 오늘 완료율, 지시한 업무 완료율, 부서 지연 업무
+  - **_StaffDashboard**: 사유 미입력 알림, 오늘 내 업무 리스트, 이번 주 반복 업무
+  - _WelcomeCard: 사용자 이름 + 역할 뱃지 + 부서명 뱃지 (department_id → 이름 조회)
+  - 공용 위젯: _ThisWeekSchedule (calendar 이벤트), _RecentMemosPreview
+  - _CompletionRateCard 재사용 (프로그레스 바 + 완료율%)
+  - dart analyze: No issues found
 
 - ✅ **Step 4 C-3: Tasks 핵심 개조 완료** (2026-09-03)
   - Task 모델 재작성: `departmentId/assignerId/dueDate/dueTime/completionNote/delayReason/recurrencePattern/recurrenceTemplateId` 신규
@@ -127,7 +137,7 @@
 - ✅ C-1: Auth (역할 enum 교체, 그리팅 수정)
 - ✅ C-2: Departments (projects 폴더 rename + 재정의)
 - ✅ C-3: Tasks 핵심 개조 (모델, 화면, 보고 시트)
-- ⏳ C-4: Dashboard 역할별 뷰
+- ✅ C-4: Dashboard 역할별 뷰
 - ⏳ C-5: Calendar (이벤트 소스 정리)
 - ⏳ C-6: Memos (문자열만 확인)
 - ⏳ C-7: Activity Logs (entity_type 매핑)
