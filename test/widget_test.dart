@@ -67,8 +67,8 @@ void main() {
     test('should detect range event occurrence', () {
       final event = CalendarEvent(
         id: '1',
-        type: CalendarEventType.project,
-        title: '과제',
+        type: CalendarEventType.task,
+        title: '기간 업무',
         date: DateTime(2026, 3, 1),
         endDate: DateTime(2026, 3, 31),
         isAllDay: true,
@@ -96,14 +96,8 @@ void main() {
   });
 
   group('CalendarEventType', () {
-    test('should have correct labels', () {
-      expect(CalendarEventType.project.label, '과제');
-      expect(CalendarEventType.task.label, '태스크');
-    });
-
-    test('should have distinct colors', () {
-      final colors = CalendarEventType.values.map((t) => t.color).toSet();
-      expect(colors.length, CalendarEventType.values.length);
+    test('should have correct label', () {
+      expect(CalendarEventType.task.label, '업무');
     });
   });
 

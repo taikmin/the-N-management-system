@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
+import '../../../departments/providers/department_provider.dart';
 import '../../domain/models/calendar_event.dart';
 import '../../providers/calendar_provider.dart';
 
@@ -390,12 +391,12 @@ class _ActiveFilters extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final typeFilter = ref.watch(calendarEventTypeFilterProvider);
-    final projectFilter = ref.watch(calendarProjectFilterProvider);
+    final deptFilter = ref.watch(calendarDepartmentFilterProvider);
     final myOnly = ref.watch(calendarMyOnlyProvider);
     final theme = Theme.of(context);
 
     final isFiltered = typeFilter.length < CalendarEventType.values.length ||
-        projectFilter != null ||
+        deptFilter != null ||
         myOnly;
 
     if (!isFiltered) return const SizedBox.shrink();
@@ -418,9 +419,9 @@ class _ActiveFilters extends ConsumerWidget {
                     _FilterTag(label: '내 담당', onRemove: () {
                       ref.read(calendarMyOnlyProvider.notifier).state = false;
                     }),
-                  if (projectFilter != null)
-                    _FilterTag(label: '과제 필터', onRemove: () {
-                      ref.read(calendarProjectFilterProvider.notifier).state =
+                  if (deptFilter != null)
+                    _FilterTag(label: '부서 필터', onRemove: () {
+                      ref.read(calendarDepartmentFilterProvider.notifier).state =
                           null;
                     }),
                   ...CalendarEventType.values
@@ -441,7 +442,7 @@ class _ActiveFilters extends ConsumerWidget {
             onPressed: () {
               ref.read(calendarEventTypeFilterProvider.notifier).state =
                   CalendarEventType.values.toSet();
-              ref.read(calendarProjectFilterProvider.notifier).state = null;
+              ref.read(calendarDepartmentFilterProvider.notifier).state = null;
               ref.read(calendarMyOnlyProvider.notifier).state = false;
             },
             child: const Text('초기화'),
@@ -480,9 +481,9 @@ class _FilterSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final typeFilter = ref.watch(calendarEventTypeFilterProvider);
-    final projectFilter = ref.watch(calendarProjectFilterProvider);
+    final deptFilter = ref.watch(calendarDepartmentFilterProvider);
     final myOnly = ref.watch(calendarMyOnlyProvider);
-    final projectsAsync = ref.watch(projectListProvider);
+    final departmentsAsync = ref.watch(departmentListProvider);
     final theme = Theme.of(context);
 
     return DraggableScrollableSheet(
@@ -551,41 +552,41 @@ class _FilterSheet extends ConsumerWidget {
               ),
               const Divider(),
 
-              // 과제별 필터
-              Text('과제 필터', style: theme.textTheme.titleSmall),
+              // 부서별 필터
+              Text('부서 필터', style: theme.textTheme.titleSmall),
               const SizedBox(height: AppSizes.xs),
               ListTile(
                 dense: true,
-                title: const Text('전체 과제'),
+                title: const Text('전체 부서'),
                 leading: Icon(
-                  projectFilter == null
+                  deptFilter == null
                       ? Icons.radio_button_checked
                       : Icons.radio_button_unchecked,
-                  color: projectFilter == null
+                  color: deptFilter == null
                       ? theme.colorScheme.primary
                       : null,
                 ),
                 onTap: () => ref
-                    .read(calendarProjectFilterProvider.notifier)
+                    .read(calendarDepartmentFilterProvider.notifier)
                     .state = null,
               ),
-              ...projectsAsync.whenOrNull(
-                    data: (projects) => projects.map((p) => ListTile(
+              ...departmentsAsync.whenOrNull(
+                    data: (departments) => departments.map((d) => ListTile(
                           dense: true,
-                          title: Text(p.title,
+                          title: Text(d.name,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis),
                           leading: Icon(
-                            projectFilter == p.id
+                            deptFilter == d.id
                                 ? Icons.radio_button_checked
                                 : Icons.radio_button_unchecked,
-                            color: projectFilter == p.id
+                            color: deptFilter == d.id
                                 ? theme.colorScheme.primary
                                 : null,
                           ),
                           onTap: () => ref
-                              .read(calendarProjectFilterProvider.notifier)
-                              .state = p.id,
+                              .read(calendarDepartmentFilterProvider.notifier)
+                              .state = d.id,
                         )),
                   ) ??
                   [],

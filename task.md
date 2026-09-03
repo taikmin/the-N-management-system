@@ -149,20 +149,20 @@
 | ID | 태스크 | DoD | 의존 | 상태 |
 |---|---|---|---|---|
 | T-4E-01 | Calendar `CalendarEventType` enum 단순화 (task 중심) | enum 조정 | T-4C-01 | ✅ |
-| T-4E-02 | Calendar에서 meeting 이벤트 소스 제거 | 참조 없음 | T-4E-01 | ⏳ |
-| T-4F-01 | Memos 브랜딩 문자열 확인/조정 | R&D 잔재 0 | - | ⏳ |
+| T-4E-02 | Calendar에서 meeting 이벤트 소스 제거 | 참조 없음 | T-4E-01 | ✅ |
+| T-4F-01 | Memos 브랜딩 문자열 확인/조정 | R&D 잔재 0 | - | ✅ |
 | T-4G-01 | Activity Logs entity_type 매핑 갱신 (tasks/departments/memos) | 아이콘/라벨 반영 | T-4C-01 | ✅ |
 | T-4H-01 | Navigation Shell 탭 재구성 (5개: 대시보드/업무/캘린더/메모/설정) | 탭 5개 렌더링 | T-2B-02 | ✅ |
 | T-4H-02 | 관리자 전용 메뉴 (부서 관리/직원 관리/활동 로그) 위치 결정 및 반영 | 관리자 로그인 시 노출 | T-4A-01 | ✅ |
-| T-4H-03 | SettingsScreen: 다이제스트 수신자 관리 + 발송 시각 설정 | CRUD + TimePicker | Step 3 | ⏳ |
-| T-4I-01 | 하드코딩 문자열 최종 grep + 정리 | R&D/KIMM/한국기계연구원 0 | 위 모두 | ⏳ |
+| T-4H-03 | SettingsScreen: 다이제스트 수신자 관리 + 발송 시각 설정 | CRUD + TimePicker | Step 3 | ✅ |
+| T-4I-01 | 하드코딩 문자열 최종 grep + 정리 | R&D/KIMM/한국기계연구원 0 | 위 모두 | ✅ |
 
 ### Step 4 마무리
 | ID | 태스크 | DoD | 의존 | 상태 |
 |---|---|---|---|---|
-| T-4Z-01 | `flutter analyze` 통과 | 오류 0 | 위 모두 | ⏳ |
-| T-4Z-02 | `flutter test` 통과 (테스트는 R&D 잔재이므로 재작성 예상) | 통과 or 재작성 결정 | T-4Z-01 | ⏳ |
-| T-4Z-03 | `flutter build web --release` 성공 | 빌드 산출물 존재 | T-4Z-01 | ⏳ |
+| T-4Z-01 | `flutter analyze` 통과 | 오류 0 | 위 모두 | ✅ |
+| T-4Z-02 | `flutter test` 통과 (테스트는 R&D 잔재이므로 재작성 예상) | 통과 or 재작성 결정 | T-4Z-01 | ✅ |
+| T-4Z-03 | `flutter build web --release` 성공 | 빌드 산출물 존재 | T-4Z-01 | ✅ |
 | T-4Z-04 | End-to-end 시나리오 수동 검증 (관리자 지시 → 직원 보고 → 이메일 수신) | 시나리오 통과 | 위 모두 | ⏳ |
 | T-4Z-05 | Step 4 커밋 & push | conv commits | T-4Z-04 | ⏳ |
 

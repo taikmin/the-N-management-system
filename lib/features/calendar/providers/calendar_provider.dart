@@ -14,13 +14,6 @@ final calendarEventTypeFilterProvider =
 final calendarDepartmentFilterProvider =
     StateProvider<String?>((ref) => null);
 
-/// TODO(Step 4 C-5): calendar_screen 리팩터링 시 제거될 별칭
-final calendarProjectFilterProvider = calendarDepartmentFilterProvider;
-
-/// TODO(Step 4 C-5): calendar_screen이 아직 참조 중인 임시 stub
-final projectListProvider = Provider<AsyncValue<List<dynamic>>>(
-    (ref) => const AsyncValue.data(<dynamic>[]));
-
 final calendarMyOnlyProvider = StateProvider<bool>((ref) => false);
 
 final calendarSelectedDayProvider =

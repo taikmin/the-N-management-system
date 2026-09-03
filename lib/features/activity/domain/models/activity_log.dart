@@ -17,7 +17,7 @@ class ActivityLog {
   final String? userId;
   final String? userName;
   final String action; // create, update, delete, complete
-  final String entityType; // tasks, projects, memos
+  final String entityType; // tasks, departments, memos
   final String? entityId;
   final String? entityTitle;
   final Map<String, dynamic>? details;
@@ -34,13 +34,11 @@ class ActivityLog {
       entityId: json['entity_id'] as String?,
       entityTitle: json['entity_title'] as String?,
       details: json['details'] as Map<String, dynamic>?,
-      createdAt:
-          DateTime.parse(json['created_at'] as String),
+      createdAt: DateTime.parse(json['created_at'] as String),
       notified: json['notified'] as bool? ?? false,
     );
   }
 
-  /// 액션 아이콘
   String get actionIcon {
     switch (action) {
       case 'create':
@@ -56,7 +54,6 @@ class ActivityLog {
     }
   }
 
-  /// 액션 라벨
   String get actionLabel {
     switch (action) {
       case 'create':
@@ -72,13 +69,12 @@ class ActivityLog {
     }
   }
 
-  /// 엔티티 라벨
   String get entityLabel {
     switch (entityType) {
       case 'tasks':
         return '업무';
-      case 'projects':
-        return '과제';
+      case 'departments':
+        return '부서';
       case 'memos':
         return '메모';
       default:
@@ -86,28 +82,18 @@ class ActivityLog {
     }
   }
 
-  /// 부모 업무 제목 (연계업무인 경우)
-  String? get parentTaskTitle =>
-      details?['parent_task_title'] as String?;
+  /// 부가 정보 (부서명 등, log_activity 트리거가 details.department_name 저장)
+  String? get departmentName =>
+      details?['department_name'] as String?;
 
-  /// 연계업무 여부
-  bool get isSubTask =>
-      entityType == 'tasks' && parentTaskTitle != null;
-
-  /// 요약 문장
   String get summary {
     final name = userName ?? '알 수 없음';
     final title = entityTitle ?? '(제목 없음)';
-    if (isSubTask) {
-      return '$name 님이 \'$title\' 연계업무를 '
-          '$actionLabel했습니다'
-          ' (상위: $parentTaskTitle)';
-    }
+    final deptSuffix = departmentName != null ? ' [$departmentName]' : '';
     return '$name 님이 \'$title\' $entityLabel을(를) '
-        '$actionLabel했습니다';
+        '$actionLabel했습니다$deptSuffix';
   }
 
-  /// 상대 시간 표시
   String get timeAgo {
     final diff = DateTime.now().difference(createdAt);
     if (diff.inMinutes < 1) return '방금';
@@ -117,22 +103,17 @@ class ActivityLog {
     return '${createdAt.month}/${createdAt.day}';
   }
 
-  /// 시간 표시 (HH:mm)
   String get timeDisplay {
     final h = createdAt.hour.toString().padLeft(2, '0');
     final m = createdAt.minute.toString().padLeft(2, '0');
     return '$h:$m';
   }
 
-  /// 날짜 키 (그룹핑용)
   String get dateKey {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final logDate = DateTime(
-      createdAt.year,
-      createdAt.month,
-      createdAt.day,
-    );
+    final logDate =
+        DateTime(createdAt.year, createdAt.month, createdAt.day);
     final diff = today.difference(logDate).inDays;
     if (diff == 0) return '오늘';
     if (diff == 1) return '어제';
@@ -142,14 +123,13 @@ class ActivityLog {
         '${createdAt.day.toString().padLeft(2, '0')}';
   }
 
-  /// 엔티티별 라우트 경로
   String? get routePath {
     if (entityId == null) return null;
     switch (entityType) {
       case 'tasks':
         return '/tasks/$entityId';
-      case 'projects':
-        return '/projects/$entityId';
+      case 'departments':
+        return '/departments/$entityId';
       case 'memos':
         return '/memos/$entityId';
       default:
@@ -162,7 +142,7 @@ class ActivityLog {
 enum ActivityFilter {
   all('전체'),
   tasks('업무'),
-  projects('과제'),
+  departments('부서'),
   memos('메모');
 
   const ActivityFilter(this.label);
@@ -174,8 +154,8 @@ enum ActivityFilter {
         return null;
       case ActivityFilter.tasks:
         return 'tasks';
-      case ActivityFilter.projects:
-        return 'projects';
+      case ActivityFilter.departments:
+        return 'departments';
       case ActivityFilter.memos:
         return 'memos';
     }

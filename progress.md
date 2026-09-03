@@ -1,6 +1,6 @@
 # The N Resort Management — 진행 현황
 
-> 마지막 업데이트: 2026-09-03 (Step 4 C-4 완료)
+> 마지막 업데이트: 2026-09-03 (Step 4 전체 완료)
 
 ---
 
@@ -27,6 +27,15 @@
 ---
 
 ## 진행 중 (🟡)
+
+- ✅ **Step 4 C-5~C-9 마무리** (2026-09-03)
+  - **C-5 Calendar**: `calendar_screen.dart`의 project 필터 → department 필터로 교체, `calendar_provider`의 `projectListProvider`/`calendarProjectFilterProvider` 임시 shim 제거
+  - **C-6 Memos**: R&D 잔재 문자열 grep 확인 (없음)
+  - **C-7 Activity Logs**: `activity_log.dart` entityType/routePath/label 매핑 `tasks/departments/memos`로 재작성, `ActivityFilter.projects` → `departments`, summary에 부서명 부가 표시
+  - **C-8 Navigation Shell**: 부서 탭 아이콘 `science` → `business`
+  - **C-9 문자열 최종 정리**: `lib/` 전체 grep — R&D/KIMM/한국기계연구원/rd_task_manager/연구원/책임연구원/연계업무/plan_type/Zoom 모두 **0 매치**
+  - `dart analyze`: **No issues found**
+  - `flutter build web --release`: **성공** (36.1초, tree-shaken)
 
 - ✅ **Step 4 C-4: Dashboard 역할별 뷰** (2026-09-03)
   - DashboardScreen을 역할별 3가지 뷰로 분기
@@ -138,11 +147,11 @@
 - ✅ C-2: Departments (projects 폴더 rename + 재정의)
 - ✅ C-3: Tasks 핵심 개조 (모델, 화면, 보고 시트)
 - ✅ C-4: Dashboard 역할별 뷰
-- ⏳ C-5: Calendar (이벤트 소스 정리)
-- ⏳ C-6: Memos (문자열만 확인)
-- ⏳ C-7: Activity Logs (entity_type 매핑)
-- ⏳ C-8: Navigation Shell (탭 재구성)
-- ⏳ C-9: 문자열 최종 정리
+- ✅ C-5: Calendar (이벤트 소스 정리)
+- ✅ C-6: Memos (문자열만 확인)
+- ✅ C-7: Activity Logs (entity_type 매핑)
+- ✅ C-8: Navigation Shell (탭 재구성)
+- ✅ C-9: 문자열 최종 정리
 
 ### Polish + 발표 준비
 - ⏳ Vercel 새 프로젝트 배포
