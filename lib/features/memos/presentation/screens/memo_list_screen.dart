@@ -4,8 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../domain/models/memo.dart';
-import '../../../../shared/widgets/responsive_layout.dart';
-import '../../../meetings/providers/recording_provider.dart';
 import '../../providers/memo_provider.dart';
 
 /// 개인 메모 목록 화면
@@ -136,21 +134,11 @@ class _MemoListScreenState
           Expanded(child: _MemoList()),
         ],
       ),
-      floatingActionButton: Transform.translate(
-        offset: Offset(
-          0,
-          ref.watch(recordingProvider).isFloatingVisible
-              ? (ResponsiveLayout.isMobile(context)
-                  ? -80.0
-                  : -56.0)
-              : 0,
-        ),
-        child: FloatingActionButton(
-          onPressed: () =>
-              context.push('/memos/create'),
-          tooltip: '메모 작성',
-          child: const Icon(Icons.add),
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () =>
+            context.push('/memos/create'),
+        tooltip: '메모 작성',
+        child: const Icon(Icons.add),
       ),
     );
   }

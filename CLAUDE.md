@@ -10,9 +10,18 @@
 - **App identifier**: `com.taikmin.hotel_management`
 
 ## Status
-- ✅ Step 1: 기존 코드 구조 파악 완료 → `docs/legacy-structure-map.md`
-- ✅ Step 2: 원작자 리소스 단절 완료 (Git, Supabase, Resend, 브랜딩, 식별자)
-- ⏳ Step 3 (예정): 2차 플랜 — 호텔 도메인 재설계 (엔티티/스키마/화면 매핑)
+
+**1차 플랜 (파악 + 단절)**: ✅ 완료
+- 구조 파악 → `docs/legacy-structure-map.md`
+- 원작자 리소스 단절 (Git, Supabase, Resend, 브랜딩, 식별자)
+
+**2차 플랜 (호텔 도메인 재설계)**: 진행 중
+- ✅ Step 1: 문서 스캐폴딩 (`plan.md`, `progress.md`, `task.md`, `lessons.md`, `README.md`, 이 파일)
+- ⏳ Step 2: R&D 잔재 삭제 (Meetings/AI/STT/daily_logs 등 코드·문서·마이그레이션)
+- ⏳ Step 3: 호텔 스키마 (Supabase에 신규 마이그레이션 적용)
+- ⏳ Step 4: Flutter 코드 재구성 (Auth/Departments/Tasks/Dashboard 등)
+
+**세부 진행 상황은 `progress.md`, 태스크 리스트는 `task.md`, 교훈은 `lessons.md` 참조.**
 
 ## Tech Stack
 - **Framework**: Flutter 3.38 (Dart 3.10)
@@ -162,8 +171,15 @@ lib/
 - FileOptions: `supabase_flutter`에서 import
 - Realtime: tasks 채널에 사용자 필터 없음 (전체 변경 구독)
 
-## 참고 문서
-- `docs/legacy-structure-map.md` — 원본 R&D 구조와 재사용 판정 상세
-- `docs/architecture.md` — 원작자 작성 아키텍처 (참고용, 호텔 재설계 시 업데이트)
-- `docs/database-schema.md` — 원작자 작성 스키마 (참고용, 호텔용 재작성 예정)
-- `README.md`, `README.html`, `CHANGELOG.md` — 원작자 작성, 아직 호텔용으로 갱신 안 됨
+## 참고 문서 (프로젝트 루트)
+- `plan.md` — 프로젝트 로드맵과 마일스톤
+- `progress.md` — 진행 현황 (완료/진행 중/미착수/블록)
+- `task.md` — 세부 태스크 리스트 (Step 1~4)
+- `lessons.md` — 개발 중 배운 교훈 (Do/Don't)
+- `README.md` — 발표 자료용 프로그램 소개 (사용자 관점)
+
+## 참고 문서 (docs/)
+- `docs/legacy-structure-map.md` — 원본 R&D 구조와 재사용 판정 (1차 플랜 산출물, 유지)
+- `docs/architecture.md`, `docs/database-schema.md`, `docs/activity-digest-setup.md`, `docs/daily-log/` — 원작자 작성. **Step 2에서 삭제 예정**
+- `CHANGELOG.md` — 원작자 이력. Step 2에서 초기화 예정
+- `conductor/` — 원작자 product/tech/workflow 문서. Step 2에서 삭제 예정

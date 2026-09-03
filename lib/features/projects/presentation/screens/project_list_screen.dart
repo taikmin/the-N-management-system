@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../shared/widgets/responsive_layout.dart';
-import '../../../meetings/providers/recording_provider.dart';
 import '../../domain/models/project.dart';
 import '../../providers/project_provider.dart';
 import '../widgets/project_card.dart';
@@ -184,19 +183,11 @@ class _ProjectListScreenState
           ),
         ],
       ),
-      floatingActionButton: Transform.translate(
-        offset: Offset(
-          0,
-          ref.watch(recordingProvider).isFloatingVisible
-              ? (isMobile ? -80.0 : -56.0)
-              : 0,
-        ),
-        child: FloatingActionButton.extended(
-          onPressed: () =>
-              context.push('/projects/create'),
-          icon: const Icon(Icons.add),
-          label: const Text('새 과제'),
-        ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () =>
+            context.push('/projects/create'),
+        icon: const Icon(Icons.add),
+        label: const Text('새 과제'),
       ),
     );
   }

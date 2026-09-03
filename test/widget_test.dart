@@ -7,11 +7,6 @@ import 'package:hotel_management/features/projects/domain/models/project.dart';
 import 'package:hotel_management/features/tasks/domain/models/task.dart';
 import 'package:hotel_management/features/tasks/domain/models/daily_log.dart';
 import 'package:hotel_management/features/tasks/domain/models/task_comment.dart';
-import 'package:hotel_management/features/meetings/domain/models/meeting.dart';
-import 'package:hotel_management/features/meetings/domain/models/meeting_participant.dart';
-import 'package:hotel_management/features/meetings/domain/models/meeting_document.dart';
-import 'package:hotel_management/features/meetings/domain/models/meeting_agenda.dart';
-import 'package:hotel_management/features/meetings/domain/models/meeting_timeline.dart';
 import 'package:hotel_management/core/constants/app_colors.dart';
 import 'package:hotel_management/features/calendar/domain/models/calendar_event.dart';
 
@@ -401,357 +396,23 @@ void main() {
     });
   });
 
-  // ─── Meeting Model ───
-
-  group('Meeting', () {
-    test('should create from JSON', () {
-      final json = {
-        'id': 'meet-1',
-        'project_id': 'proj-1',
-        'title': '2026년 1차 진도점검회의',
-        'meeting_type': 'progress_check',
-        'meeting_date': '2026-03-15T14:00:00',
-        'location': '본관 대회의실',
-        'room_name': '301호',
-        'status': 'preparing',
-        'meal_reservation': true,
-        'meal_location': '구내식당',
-        'expected_attendees': 15,
-        'creator_id': 'user-1',
-        'profiles': {'full_name': '박철훈'},
-        'projects': {'title': '로봇 제어 시스템'},
-      };
-
-      final meeting = Meeting.fromJson(json);
-      expect(meeting.id, 'meet-1');
-      expect(meeting.title, '2026년 1차 진도점검회의');
-      expect(meeting.meetingType, MeetingType.progressCheck);
-      expect(meeting.status, MeetingStatus.preparing);
-      expect(meeting.mealReservation, true);
-      expect(meeting.creatorName, '박철훈');
-      expect(meeting.projectTitle, '로봇 제어 시스템');
-      expect(meeting.expectedAttendees, 15);
-    });
-
-    test('should detect today meeting', () {
-      final now = DateTime.now();
-      final meeting = Meeting(
-        id: '1',
-        projectId: 'p1',
-        title: '오늘 회의',
-        meetingDate: now,
-        creatorId: 'u1',
-      );
-      expect(meeting.isToday, true);
-      expect(meeting.daysUntil, 0);
-    });
-
-    test('should detect past meeting', () {
-      final meeting = Meeting(
-        id: '2',
-        projectId: 'p1',
-        title: '지난 회의',
-        meetingDate: DateTime.now().subtract(const Duration(days: 5)),
-        creatorId: 'u1',
-      );
-      expect(meeting.isPast, true);
-    });
-
-    test('should produce correct toInsertJson', () {
-      final meeting = Meeting(
-        id: '',
-        projectId: 'p1',
-        title: '테스트 회의',
-        meetingType: MeetingType.kickoff,
-        meetingDate: DateTime(2026, 3, 15, 14, 0),
-        creatorId: 'u1',
-        mealReservation: true,
-      );
-      final json = meeting.toInsertJson();
-      expect(json['meeting_type'], 'kickoff');
-      expect(json['meal_reservation'], true);
-      expect(json['creator_id'], 'u1');
-    });
-
-    test('should parse all meeting types', () {
-      expect(
-        MeetingType.fromString('progress_check'),
-        MeetingType.progressCheck,
-      );
-      expect(MeetingType.fromString('kickoff'), MeetingType.kickoff);
-      expect(
-        MeetingType.fromString('mid_presentation'),
-        MeetingType.midPresentation,
-      );
-      expect(
-        MeetingType.fromString('final_presentation'),
-        MeetingType.finalPresentation,
-      );
-      expect(MeetingType.fromString('other'), MeetingType.other);
-    });
-
-    test('should parse all meeting statuses', () {
-      expect(MeetingStatus.fromString('preparing'), MeetingStatus.preparing);
-      expect(MeetingStatus.fromString('notified'), MeetingStatus.notified);
-      expect(MeetingStatus.fromString('in_progress'), MeetingStatus.inProgress);
-      expect(MeetingStatus.fromString('completed'), MeetingStatus.completed);
-    });
-
-    test('should support copyWith', () {
-      final meeting = Meeting(
-        id: '1',
-        projectId: 'p1',
-        title: '원본',
-        meetingDate: DateTime(2026, 3, 15),
-        creatorId: 'u1',
-        status: MeetingStatus.preparing,
-      );
-      final updated = meeting.copyWith(
-        title: '수정됨',
-        status: MeetingStatus.completed,
-      );
-      expect(updated.title, '수정됨');
-      expect(updated.status, MeetingStatus.completed);
-      expect(updated.projectId, 'p1');
-    });
-  });
-
-  // ─── Meeting Participant ───
-
-  group('MeetingParticipant', () {
-    test('should create from JSON', () {
-      final json = {
-        'id': 'mp-1',
-        'meeting_id': 'meet-1',
-        'user_id': 'user-1',
-        'attendance': 'confirmed',
-        'role': 'organizer',
-        'profiles': {'full_name': '홍길동', 'email': 'hong@example.com'},
-      };
-
-      final p = MeetingParticipant.fromJson(json);
-      expect(p.attendance, AttendanceStatus.confirmed);
-      expect(p.role, ParticipantRole.organizer);
-      expect(p.userName, '홍길동');
-      expect(p.userEmail, 'hong@example.com');
-    });
-
-    test('should parse attendance statuses', () {
-      expect(AttendanceStatus.fromString('pending'), AttendanceStatus.pending);
-      expect(
-        AttendanceStatus.fromString('confirmed'),
-        AttendanceStatus.confirmed,
-      );
-      expect(
-        AttendanceStatus.fromString('declined'),
-        AttendanceStatus.declined,
-      );
-    });
-
-    test('should parse participant roles', () {
-      expect(
-        ParticipantRole.fromString('organizer'),
-        ParticipantRole.organizer,
-      );
-      expect(
-        ParticipantRole.fromString('presenter'),
-        ParticipantRole.presenter,
-      );
-      expect(ParticipantRole.fromString('attendee'), ParticipantRole.attendee);
-    });
-  });
-
-  // ─── Meeting Document ───
-
-  group('MeetingDocument', () {
-    test('should create from JSON', () {
-      final json = {
-        'id': 'doc-1',
-        'meeting_id': 'meet-1',
-        'doc_type': 'template',
-        'title': '진도점검 보고서 양식',
-        'uploader_id': 'user-1',
-        'submit_status': 'submitted',
-        'profiles': {'full_name': '김연구'},
-      };
-
-      final doc = MeetingDocument.fromJson(json);
-      expect(doc.docType, DocType.template);
-      expect(doc.submitStatus, SubmitStatus.submitted);
-      expect(doc.uploaderName, '김연구');
-    });
-
-    test('should detect overdue documents', () {
-      final overdue = MeetingDocument(
-        id: '1',
-        meetingId: 'm1',
-        title: '마감 초과',
-        uploaderId: 'u1',
-        dueDate: DateTime.now().subtract(const Duration(days: 1)),
-        submitStatus: SubmitStatus.notSubmitted,
-      );
-      expect(overdue.isOverdue, true);
-
-      final submitted = MeetingDocument(
-        id: '2',
-        meetingId: 'm1',
-        title: '제출 완료',
-        uploaderId: 'u1',
-        dueDate: DateTime.now().subtract(const Duration(days: 1)),
-        submitStatus: SubmitStatus.submitted,
-      );
-      expect(submitted.isOverdue, false);
-    });
-
-    test('should parse doc types', () {
-      expect(DocType.fromString('template'), DocType.template);
-      expect(DocType.fromString('submission'), DocType.submission);
-      expect(DocType.fromString('compiled'), DocType.compiled);
-      expect(DocType.fromString('minutes'), DocType.minutes);
-      expect(DocType.fromString('unknown'), DocType.other);
-    });
-
-    test('should parse submit statuses', () {
-      expect(
-        SubmitStatus.fromString('not_submitted'),
-        SubmitStatus.notSubmitted,
-      );
-      expect(SubmitStatus.fromString('submitted'), SubmitStatus.submitted);
-      expect(
-        SubmitStatus.fromString('revision_requested'),
-        SubmitStatus.revisionRequested,
-      );
-    });
-  });
-
-  // ─── Meeting Agenda ───
-
-  group('MeetingAgenda', () {
-    test('should create from JSON', () {
-      final json = {
-        'id': 'ag-1',
-        'meeting_id': 'meet-1',
-        'order_index': 0,
-        'title': '연구 진행현황 보고',
-        'duration_minutes': 20,
-        'profiles': {'full_name': '이발표'},
-      };
-
-      final agenda = MeetingAgenda.fromJson(json);
-      expect(agenda.title, '연구 진행현황 보고');
-      expect(agenda.durationMinutes, 20);
-      expect(agenda.presenterName, '이발표');
-    });
-
-    test('should produce correct toInsertJson', () {
-      const agenda = MeetingAgenda(
-        id: '',
-        meetingId: 'm1',
-        orderIndex: 2,
-        title: '예산 현황',
-        durationMinutes: 15,
-      );
-      final json = agenda.toInsertJson();
-      expect(json['order_index'], 2);
-      expect(json['duration_minutes'], 15);
-    });
-  });
-
-  // ─── Meeting Timeline ───
-
-  group('MeetingTimeline', () {
-    test('should create from JSON', () {
-      final json = {
-        'id': 'tl-1',
-        'meeting_id': 'meet-1',
-        'milestone': 'template_distribution',
-        'label': '양식 배포',
-        'due_date': '2026-03-01',
-        'is_completed': false,
-        'notification_sent': false,
-      };
-
-      final tl = MeetingTimeline.fromJson(json);
-      expect(tl.milestone, 'template_distribution');
-      expect(tl.label, '양식 배포');
-      expect(tl.isCompleted, false);
-    });
-
-    test('should detect overdue milestones', () {
-      final overdue = MeetingTimeline(
-        id: '1',
-        meetingId: 'm1',
-        milestone: 'submission_deadline',
-        label: '제출 마감',
-        dueDate: DateTime.now().subtract(const Duration(days: 1)),
-        isCompleted: false,
-      );
-      expect(overdue.isOverdue, true);
-
-      final completed = MeetingTimeline(
-        id: '2',
-        meetingId: 'm1',
-        milestone: 'submission_deadline',
-        label: '제출 마감',
-        dueDate: DateTime.now().subtract(const Duration(days: 1)),
-        isCompleted: true,
-      );
-      expect(completed.isOverdue, false);
-    });
-
-    test('should generate default milestones', () {
-      final meetingDate = DateTime(2026, 4, 1, 14, 0);
-      final defaults = MeetingTimeline.generateDefaults(
-        meetingId: 'meet-1',
-        meetingDate: meetingDate,
-      );
-
-      expect(defaults.length, 5);
-      expect(defaults[0].milestone, 'template_distribution');
-      expect(
-        defaults[0].dueDate,
-        meetingDate.subtract(const Duration(days: 14)),
-      );
-      expect(defaults[1].milestone, 'submission_deadline');
-      expect(
-        defaults[1].dueDate,
-        meetingDate.subtract(const Duration(days: 7)),
-      );
-      expect(defaults[4].milestone, 'meeting_day');
-      expect(defaults[4].dueDate, meetingDate);
-    });
-
-    test('should produce correct toInsertJson', () {
-      final tl = MeetingTimeline(
-        id: '',
-        meetingId: 'm1',
-        milestone: 'pre_review',
-        label: '사전 검토',
-        dueDate: DateTime(2026, 3, 31),
-      );
-      final json = tl.toInsertJson();
-      expect(json['milestone'], 'pre_review');
-      expect(json['is_completed'], false);
-    });
-  });
-
   // ─── CalendarEvent Model ───
 
   group('CalendarEvent', () {
     test('should create with correct properties', () {
       final event = CalendarEvent(
         id: 'evt-1',
-        type: CalendarEventType.meeting,
+        type: CalendarEventType.task,
         title: '진도점검회의',
         date: DateTime(2026, 3, 15, 14, 0),
         subtitle: '진도점검 · 준비중',
-        routePath: '/meetings/m1',
+        routePath: '/tasks/m1',
       );
 
       expect(event.id, 'evt-1');
-      expect(event.type, CalendarEventType.meeting);
+      expect(event.type, CalendarEventType.task);
       expect(event.title, '진도점검회의');
-      expect(event.routePath, '/meetings/m1');
+      expect(event.routePath, '/tasks/m1');
       expect(event.isAllDay, false);
       expect(event.isDelayed, false);
     });
@@ -780,7 +441,7 @@ void main() {
     test('should detect single-day event occurrence', () {
       final event = CalendarEvent(
         id: '1',
-        type: CalendarEventType.meeting,
+        type: CalendarEventType.task,
         title: '회의',
         date: DateTime(2026, 3, 15),
       );
@@ -810,7 +471,7 @@ void main() {
     test('should ignore time when checking occurrence', () {
       final event = CalendarEvent(
         id: '1',
-        type: CalendarEventType.meeting,
+        type: CalendarEventType.task,
         title: '오후 회의',
         date: DateTime(2026, 3, 15, 14, 30),
       );
@@ -825,8 +486,6 @@ void main() {
     test('should have correct labels', () {
       expect(CalendarEventType.project.label, '과제');
       expect(CalendarEventType.task.label, '태스크');
-      expect(CalendarEventType.meeting.label, '회의');
-      expect(CalendarEventType.milestone.label, '마일스톤');
     });
 
     test('should have distinct colors', () {

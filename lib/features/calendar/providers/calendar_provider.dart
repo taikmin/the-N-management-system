@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/supabase_config.dart';
-import '../../meetings/providers/meeting_provider.dart';
 import '../../projects/providers/project_provider.dart';
 import '../../tasks/providers/task_provider.dart';
 import '../domain/models/calendar_event.dart';
@@ -35,7 +34,6 @@ final calendarEventsProvider =
     Provider<AsyncValue<List<CalendarEvent>>>((ref) {
   final projectsAsync = ref.watch(projectListProvider);
   final tasksAsync = ref.watch(allMyTasksProvider);
-  final meetingsAsync = ref.watch(meetingListProvider);
 
   // 필터
   final typeFilter = ref.watch(calendarEventTypeFilterProvider);
@@ -43,9 +41,7 @@ final calendarEventsProvider =
   final myOnly = ref.watch(calendarMyOnlyProvider);
 
   // 모든 데이터가 로딩 중이면 로딩 표시
-  if (projectsAsync.isLoading &&
-      tasksAsync.isLoading &&
-      meetingsAsync.isLoading) {
+  if (projectsAsync.isLoading && tasksAsync.isLoading) {
     return const AsyncValue.loading();
   }
 
@@ -105,37 +101,6 @@ final calendarEventsProvider =
     }
   }
 
-  // 3. 회의 이벤트
-  if (typeFilter.contains(CalendarEventType.meeting)) {
-    final meetings = meetingsAsync.valueOrNull ?? [];
-    for (final m in meetings) {
-      if (projectFilter != null && m.projectId != projectFilter) continue;
-
-      events.add(CalendarEvent(
-        id: 'meeting_${m.id}',
-        type: CalendarEventType.meeting,
-        title: m.title,
-        date: m.meetingDate,
-        subtitle: '${m.meetingType.label} · ${m.status.label}',
-        projectId: m.projectId,
-        projectTitle: m.projectTitle,
-        routePath: '/meetings/${m.id}',
-      ));
-    }
-  }
-
-  // 4. 회의 타임라인 마일스톤 — 각 회의별로 로드 필요하므로
-  //    meetingList에서 회의 ID를 얻어 타임라인 이벤트를 추가
-  //    (타임라인은 meetingListProvider에 포함되지 않으므로,
-  //     별도 provider로 일괄 조회 → 아래 calendarMilestonesProvider 참조)
-  if (typeFilter.contains(CalendarEventType.milestone)) {
-    final milestones = ref.watch(calendarMilestonesProvider).valueOrNull ?? [];
-    for (final e in milestones) {
-      if (projectFilter != null && e.projectId != projectFilter) continue;
-      events.add(e);
-    }
-  }
-
   // 날짜 순 정렬
   events.sort((a, b) => a.date.compareTo(b.date));
 
@@ -165,37 +130,3 @@ final thisWeekEventsProvider = Provider<List<CalendarEvent>>((ref) {
   }).toList();
 });
 
-// ─── Milestone aggregation ───
-
-/// 모든 회의의 타임라인 마일스톤을 CalendarEvent로 변환
-final calendarMilestonesProvider =
-    FutureProvider<List<CalendarEvent>>((ref) async {
-  final meetings = ref.watch(meetingListProvider).valueOrNull ?? [];
-  final repo = ref.read(meetingRepositoryProvider);
-
-  final events = <CalendarEvent>[];
-  for (final m in meetings) {
-    try {
-      final milestones = await repo.getTimeline(m.id);
-      for (final ms in milestones) {
-        if (ms.isCompleted) continue;
-        events.add(CalendarEvent(
-          id: 'milestone_${ms.id}',
-          type: CalendarEventType.milestone,
-          title: ms.label,
-          date: ms.dueDate,
-          subtitle: m.title,
-          projectId: m.projectId,
-          projectTitle: m.projectTitle,
-          isAllDay: true,
-          isDelayed: ms.isOverdue,
-          routePath: '/meetings/${m.id}',
-        ));
-      }
-    } catch (_) {
-      // 개별 타임라인 조회 실패 시 무시
-    }
-  }
-
-  return events;
-});

@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../shared/widgets/responsive_layout.dart';
-import '../../../meetings/providers/recording_provider.dart';
 import '../../domain/models/task.dart';
 import '../../providers/task_provider.dart';
 
@@ -190,30 +189,6 @@ class _TaskListScreenState
                 () => _showSearch = true,
               ),
             ),
-          IconButton(
-            icon: const Icon(Icons.mic),
-            tooltip: '회의 녹음',
-            onPressed: () {
-              final rec =
-                  ref.read(recordingProvider);
-              if (rec.isFloatingVisible) {
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(
-                  const SnackBar(
-                    content:
-                        Text('이미 녹음 중입니다'),
-                    duration:
-                        Duration(seconds: 1),
-                  ),
-                );
-              } else {
-                ref
-                    .read(recordingProvider
-                        .notifier)
-                    .activate();
-              }
-            },
-          ),
           _SortButton(),
           IconButton(
             icon: Icon(
@@ -329,19 +304,11 @@ class _TaskListScreenState
           ),
         ],
       ),
-      floatingActionButton: Transform.translate(
-        offset: Offset(
-          0,
-          ref.watch(recordingProvider).isFloatingVisible
-              ? (isMobile ? -80.0 : -56.0)
-              : 0,
-        ),
-        child: FloatingActionButton(
-          onPressed: () =>
-              context.push('/tasks/create'),
-          tooltip: '상세 업무 생성',
-          child: const Icon(Icons.add),
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () =>
+            context.push('/tasks/create'),
+        tooltip: '상세 업무 생성',
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -2712,13 +2679,7 @@ void _showUndoSnackBar(
   String? previousParentId,
   String message,
 ) {
-  final recording = ref.read(recordingProvider);
-  final isMobile =
-      ResponsiveLayout.isMobile(context);
-  // 플로팅 녹음 바가 보이면 SnackBar를 위로 올림
-  final bottomMargin = recording.isFloatingVisible
-      ? (isMobile ? 80.0 : 60.0)
-      : 0.0;
+  final bottomMargin = 0.0;
 
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()

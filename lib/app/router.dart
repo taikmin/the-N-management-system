@@ -11,14 +11,6 @@ import '../features/projects/presentation/screens/project_create_screen.dart';
 import '../features/projects/presentation/screens/project_detail_screen.dart';
 import '../features/projects/presentation/screens/project_list_screen.dart';
 import '../features/calendar/presentation/screens/calendar_screen.dart';
-import '../features/meetings/presentation/screens/meeting_create_screen.dart';
-import '../features/meetings/presentation/screens/meeting_detail_screen.dart';
-import '../features/meetings/presentation/screens/meeting_list_screen.dart';
-import '../features/meetings/presentation/screens/meeting_recording_screen.dart';
-import '../features/meetings/presentation/screens/meeting_minutes_result_screen.dart';
-import '../features/meetings/presentation/widgets/floating_recording_controller.dart';
-import '../features/meetings/providers/meeting_provider.dart';
-import '../features/meetings/providers/recording_provider.dart';
 import '../features/projects/providers/project_provider.dart';
 import '../features/tasks/presentation/screens/task_create_screen.dart';
 import '../features/tasks/presentation/screens/task_detail_screen.dart';
@@ -89,13 +81,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             ),
           ),
           GoRoute(
-            path: '/meetings',
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(
-              child: MeetingListScreen(),
-            ),
-          ),
-          GoRoute(
             path: '/calendar',
             pageBuilder: (context, state) =>
                 const NoTransitionPage(
@@ -128,24 +113,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
 
       // ─── Task standalone routes ───
-      GoRoute(
-        path: '/tasks/record',
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) {
-          final isDetail = state.uri
-                  .queryParameters['detail'] ==
-              'true';
-          return MeetingRecordingScreen(
-            isDetailMode: isDetail,
-          );
-        },
-      ),
-      GoRoute(
-        path: '/tasks/minutes-result',
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) =>
-            const MeetingMinutesResultScreen(),
-      ),
       GoRoute(
         path: '/tasks/create',
         parentNavigatorKey: _rootNavigatorKey,
@@ -257,69 +224,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
 
-      // ─── Meeting routes ───
-      GoRoute(
-        path: '/meetings/create',
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) {
-          final projectId =
-              state.uri.queryParameters['projectId'];
-          return MeetingCreateScreen(
-            projectId: projectId,
-          );
-        },
-      ),
-      GoRoute(
-        path: '/meetings/edit/:meetingId',
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) {
-          final meetingId =
-              state.pathParameters['meetingId']!;
-          return _MeetingEditLoader(
-            meetingId: meetingId,
-          );
-        },
-      ),
-      GoRoute(
-        path: '/meetings/:meetingId',
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) {
-          final meetingId =
-              state.pathParameters['meetingId']!;
-          return MeetingDetailScreen(
-            meetingId: meetingId,
-          );
-        },
-        routes: [
-          GoRoute(
-            path: 'record',
-            parentNavigatorKey: _rootNavigatorKey,
-            builder: (context, state) {
-              final meetingId = state
-                  .pathParameters['meetingId']!;
-              final isDetail = state.uri
-                      .queryParameters['detail'] ==
-                  'true';
-              return MeetingRecordingScreen(
-                meetingId: meetingId,
-                isDetailMode: isDetail,
-              );
-            },
-          ),
-          GoRoute(
-            path: 'minutes-result',
-            parentNavigatorKey: _rootNavigatorKey,
-            builder: (context, state) {
-              final meetingId = state
-                  .pathParameters['meetingId']!;
-              return MeetingMinutesResultScreen(
-                meetingId: meetingId,
-              );
-            },
-          ),
-        ],
-      ),
-
       // ─── Memo routes ───
       GoRoute(
         path: '/memos/create',
@@ -396,32 +300,6 @@ class _TaskEditLoader extends ConsumerWidget {
   }
 }
 
-/// 회의 수정 로더 (회의 데이터를 로드해서 MeetingCreateScreen에 전달)
-class _MeetingEditLoader extends ConsumerWidget {
-  const _MeetingEditLoader({
-    required this.meetingId,
-  });
-  final String meetingId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final meetingAsync =
-        ref.watch(meetingDetailProvider(meetingId));
-
-    return meetingAsync.when(
-      data: (meeting) =>
-          MeetingCreateScreen(meeting: meeting),
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
-      error: (e, _) => Scaffold(
-        appBar: AppBar(),
-        body: Center(child: Text('오류: $e')),
-      ),
-    );
-  }
-}
-
 /// 독립 태스크 수정 로더
 class _StandaloneTaskEditLoader extends ConsumerWidget {
   const _StandaloneTaskEditLoader({
@@ -457,7 +335,6 @@ class _ShellWithNav extends ConsumerWidget {
     '/dashboard',
     '/projects',
     '/tasks',
-    '/meetings',
     '/calendar',
     '/memos',
     '/settings',
@@ -470,20 +347,13 @@ class _ShellWithNav extends ConsumerWidget {
     final currentIndex = _paths
         .indexOf(location)
         .clamp(0, _paths.length - 1);
-    final recording = ref.watch(recordingProvider);
 
-    return Stack(
-      children: [
-        AppNavigationShell(
-          currentIndex: currentIndex,
-          onDestinationSelected: (index) {
-            context.go(_paths[index]);
-          },
-          child: child,
-        ),
-        if (recording.isFloatingVisible)
-          const FloatingRecordingController(),
-      ],
+    return AppNavigationShell(
+      currentIndex: currentIndex,
+      onDestinationSelected: (index) {
+        context.go(_paths[index]);
+      },
+      child: child,
     );
   }
 }

@@ -8,8 +8,6 @@ import '../../../../shared/widgets/responsive_layout.dart';
 import '../../../activity/providers/activity_provider.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../../calendar/providers/calendar_provider.dart';
-import '../../../meetings/domain/models/meeting.dart';
-import '../../../meetings/providers/meeting_provider.dart';
 import '../../../memos/providers/memo_provider.dart';
 import '../../../projects/providers/project_provider.dart';
 import '../../../tasks/providers/task_provider.dart';
@@ -111,10 +109,6 @@ class DashboardScreen extends ConsumerWidget {
 
               // 이번 주 일정
               _ThisWeekSchedule(),
-              const SizedBox(height: AppSizes.lg),
-
-              // 다가오는 회의
-              _UpcomingMeetingsPreview(),
               const SizedBox(height: AppSizes.lg),
 
               // 최근 메모
@@ -360,75 +354,6 @@ class _ProjectsPreview extends ConsumerWidget {
       loading: () => const SizedBox.shrink(),
       error: (_, _) => const SizedBox.shrink(),
     );
-  }
-}
-
-/// 다가오는 회의 미리보기
-class _UpcomingMeetingsPreview extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final meetingsAsync = ref.watch(upcomingMeetingsProvider);
-    final theme = Theme.of(context);
-
-    return meetingsAsync.when(
-      data: (meetings) {
-        if (meetings.isEmpty) return const SizedBox.shrink();
-
-        final upcoming = meetings.take(3).toList();
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '다가오는 회의',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => GoRouter.of(context).go('/meetings'),
-                  child: const Text('전체 보기'),
-                ),
-              ],
-            ),
-            ...upcoming.map((m) => Card(
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: _meetingColor(m),
-                      child: Text(
-                        m.isToday
-                            ? 'D0'
-                            : 'D-${m.daysUntil}',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    title: Text(m.title,
-                        maxLines: 1, overflow: TextOverflow.ellipsis),
-                    subtitle: Text(
-                      '${m.meetingType.label} · ${m.meetingDate.month}/${m.meetingDate.day}',
-                    ),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => GoRouter.of(context)
-                        .push('/meetings/${m.id}'),
-                  ),
-                )),
-          ],
-        );
-      },
-      loading: () => const SizedBox.shrink(),
-      error: (_, _) => const SizedBox.shrink(),
-    );
-  }
-
-  Color _meetingColor(Meeting m) {
-    if (m.isToday) return AppColors.error;
-    if (m.daysUntil <= 3) return AppColors.warning;
-    return AppColors.info;
   }
 }
 

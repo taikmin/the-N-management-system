@@ -36,11 +36,6 @@ class AppNavigationShell extends StatelessWidget {
       label: AppStrings.tasks,
     ),
     _NavItem(
-      icon: Icons.groups_outlined,
-      selectedIcon: Icons.groups,
-      label: AppStrings.meetings,
-    ),
-    _NavItem(
       icon: Icons.calendar_month_outlined,
       selectedIcon: Icons.calendar_month,
       label: AppStrings.calendar,

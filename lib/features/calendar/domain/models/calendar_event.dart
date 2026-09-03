@@ -4,9 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 /// 통합 캘린더 이벤트 유형
 enum CalendarEventType {
   project('과제', AppColors.primary, Icons.science),
-  task('태스크', AppColors.secondary, Icons.task_alt),
-  meeting('회의', AppColors.error, Icons.groups),
-  milestone('마일스톤', AppColors.tertiary, Icons.flag);
+  task('태스크', AppColors.secondary, Icons.task_alt);
 
   const CalendarEventType(this.label, this.color, this.icon);
   final String label;
@@ -15,7 +13,7 @@ enum CalendarEventType {
 }
 
 /// 통합 캘린더 이벤트 모델
-/// projects, tasks, meetings, meeting_timeline 데이터를 하나로 통합한다.
+/// projects, tasks 데이터를 하나로 통합한다.
 class CalendarEvent {
   const CalendarEvent({
     required this.id,
@@ -41,7 +39,7 @@ class CalendarEvent {
   final String? projectTitle;
   final bool isAllDay;
   final bool isDelayed;
-  /// 탭하면 이동할 경로 (예: /projects/xxx, /meetings/xxx)
+  /// 탭하면 이동할 경로 (예: /projects/xxx, /tasks/xxx)
   final String? routePath;
 
   Color get color => isDelayed ? AppColors.error : type.color;

@@ -17,7 +17,7 @@ class ActivityLog {
   final String? userId;
   final String? userName;
   final String action; // create, update, delete, complete
-  final String entityType; // tasks, projects, meetings, memos, meeting_timeline
+  final String entityType; // tasks, projects, memos
   final String? entityId;
   final String? entityTitle;
   final Map<String, dynamic>? details;
@@ -79,12 +79,8 @@ class ActivityLog {
         return '업무';
       case 'projects':
         return '과제';
-      case 'meetings':
-        return '회의';
       case 'memos':
         return '메모';
-      case 'meeting_timeline':
-        return '타임라인';
       default:
         return entityType;
     }
@@ -154,8 +150,6 @@ class ActivityLog {
         return '/tasks/$entityId';
       case 'projects':
         return '/projects/$entityId';
-      case 'meetings':
-        return '/meetings/$entityId';
       case 'memos':
         return '/memos/$entityId';
       default:
@@ -169,7 +163,6 @@ enum ActivityFilter {
   all('전체'),
   tasks('업무'),
   projects('과제'),
-  meetings('회의'),
   memos('메모');
 
   const ActivityFilter(this.label);
@@ -183,8 +176,6 @@ enum ActivityFilter {
         return 'tasks';
       case ActivityFilter.projects:
         return 'projects';
-      case ActivityFilter.meetings:
-        return 'meetings';
       case ActivityFilter.memos:
         return 'memos';
     }
