@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = rd_task_manager
+PRODUCT_NAME = hotel_management
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = kr.re.kimm.rdTaskManager
+PRODUCT_BUNDLE_IDENTIFIER = com.taikmin.hotel_management
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2026 kr.re.kimm. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2026 taikmin. All rights reserved.

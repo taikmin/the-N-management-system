@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-/// KIMM 브랜드 기반 앱 색상 시스템
+/// The N Resort 브랜드 기반 앱 색상 시스템
 class AppColors {
   AppColors._();
 
-  // Primary: KIMM Blue
-  static const Color primary = Color(0xFF1565C0);
+  // Primary: Tiffany Blue
+  static const Color primary = Color(0xFF0ABAB5);
   static const Color onPrimary = Colors.white;
 
   // Secondary: Research Green

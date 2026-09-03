@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "kr.re.kimm" "\0"
-            VALUE "FileDescription", "rd_task_manager" "\0"
+            VALUE "CompanyName", "com.taikmin" "\0"
+            VALUE "FileDescription", "hotel_management" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "rd_task_manager" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 kr.re.kimm. All rights reserved." "\0"
-            VALUE "OriginalFilename", "rd_task_manager.exe" "\0"
-            VALUE "ProductName", "rd_task_manager" "\0"
+            VALUE "InternalName", "hotel_management" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 com.taikmin. All rights reserved." "\0"
+            VALUE "OriginalFilename", "hotel_management.exe" "\0"
+            VALUE "ProductName", "hotel_management" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

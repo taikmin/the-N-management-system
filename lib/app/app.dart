@@ -5,8 +5,8 @@ import 'router.dart';
 import 'theme.dart';
 
 /// 앱 루트 위젯
-class RdTaskManagerApp extends ConsumerWidget {
-  const RdTaskManagerApp({super.key});
+class HotelManagementApp extends ConsumerWidget {
+  const HotelManagementApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

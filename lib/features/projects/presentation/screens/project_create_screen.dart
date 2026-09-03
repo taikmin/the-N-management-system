@@ -56,7 +56,7 @@ class _ProjectCreateScreenState
           : '',
     );
     _leadInstController = TextEditingController(
-        text: p?.leadInstitution ?? '한국기계연구원');
+        text: p?.leadInstitution ?? '');
     _coInstController = TextEditingController(
         text: p?.coInstitutions.join(', ') ?? '');
     _status = p?.status ?? ProjectStatus.planning;

@@ -1,4 +1,4 @@
-package kr.re.kimm.rd_task_manager
+package com.taikmin.hotel_management
 
 import io.flutter.embedding.android.FlutterActivity
 

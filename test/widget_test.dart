@@ -1,19 +1,19 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:rd_task_manager/core/constants/app_strings.dart';
-import 'package:rd_task_manager/features/auth/domain/models/app_user.dart';
-import 'package:rd_task_manager/features/auth/domain/models/user_role.dart';
-import 'package:rd_task_manager/features/projects/domain/models/project.dart';
-import 'package:rd_task_manager/features/tasks/domain/models/task.dart';
-import 'package:rd_task_manager/features/tasks/domain/models/daily_log.dart';
-import 'package:rd_task_manager/features/tasks/domain/models/task_comment.dart';
-import 'package:rd_task_manager/features/meetings/domain/models/meeting.dart';
-import 'package:rd_task_manager/features/meetings/domain/models/meeting_participant.dart';
-import 'package:rd_task_manager/features/meetings/domain/models/meeting_document.dart';
-import 'package:rd_task_manager/features/meetings/domain/models/meeting_agenda.dart';
-import 'package:rd_task_manager/features/meetings/domain/models/meeting_timeline.dart';
-import 'package:rd_task_manager/core/constants/app_colors.dart';
-import 'package:rd_task_manager/features/calendar/domain/models/calendar_event.dart';
+import 'package:hotel_management/core/constants/app_strings.dart';
+import 'package:hotel_management/features/auth/domain/models/app_user.dart';
+import 'package:hotel_management/features/auth/domain/models/user_role.dart';
+import 'package:hotel_management/features/projects/domain/models/project.dart';
+import 'package:hotel_management/features/tasks/domain/models/task.dart';
+import 'package:hotel_management/features/tasks/domain/models/daily_log.dart';
+import 'package:hotel_management/features/tasks/domain/models/task_comment.dart';
+import 'package:hotel_management/features/meetings/domain/models/meeting.dart';
+import 'package:hotel_management/features/meetings/domain/models/meeting_participant.dart';
+import 'package:hotel_management/features/meetings/domain/models/meeting_document.dart';
+import 'package:hotel_management/features/meetings/domain/models/meeting_agenda.dart';
+import 'package:hotel_management/features/meetings/domain/models/meeting_timeline.dart';
+import 'package:hotel_management/core/constants/app_colors.dart';
+import 'package:hotel_management/features/calendar/domain/models/calendar_event.dart';
 
 void main() {
   // ─── Auth Models ───

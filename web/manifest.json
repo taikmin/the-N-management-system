@@ -1,11 +1,11 @@
 {
-    "name": "R&D Task Manager",
-    "short_name": "R&D Tasks",
+    "name": "The N Resort Management",
+    "short_name": "The N Resort",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FFFFFF",
-    "theme_color": "#1565C0",
-    "description": "R&D 과제 통합 관리 시스템 - 한국기계연구원",
+    "theme_color": "#0ABAB5",
+    "description": "The N Resort Management",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

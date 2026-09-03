@@ -1,4 +1,4 @@
-/// R&D 과제 모델
+/// 과제 모델 (호텔 도메인용으로 재설계 예정)
 class Project {
   const Project({
     required this.id,
@@ -8,7 +8,7 @@ class Project {
     this.status = ProjectStatus.planning,
     this.startDate,
     this.endDate,
-    this.leadInstitution = '한국기계연구원',
+    this.leadInstitution = '',
     this.coInstitutions = const [],
     this.totalBudget = 0,
     required this.ownerId,
@@ -52,7 +52,7 @@ class Project {
           ? DateTime.parse(json['end_date'] as String)
           : null,
       leadInstitution:
-          json['lead_institution'] as String? ?? '한국기계연구원',
+          json['lead_institution'] as String? ?? '',
       coInstitutions: (json['co_institutions'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??

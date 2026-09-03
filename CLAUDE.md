@@ -1,42 +1,50 @@
-# CLAUDE.md - R&D Task Manager
+# CLAUDE.md - The N Resort Management
 
 ## Project Overview
-한국기계연구원(KIMM) R&D 과제 통합 관리 웹앱.
-연구 과제의 일정, 업무, 회의, 캘린더, 메모, 팀 활동 추적을 하나의 앱에서 관리한다.
+**The N Resort** 호텔·리조트 통합 관리 웹앱.
 
-- **배포 URL**: https://rd-task-manager-coral.vercel.app
-- **GitHub**: github.com/parkch-meca/project-management-app
-- **Org**: kr.re.kimm (한국기계연구원)
+이 리포지토리는 R&D 과제 관리 앱(`rd-task-manager`, 원작자: parkch-meca)의 코드 구조를 기반으로, 호텔·리조트 운영 관리용 앱으로 재구성 중이다. 원작자의 GitHub/Supabase/Resend/브랜딩 리소스와는 완전히 단절된 상태이며, 도메인 로직(과제·업무·회의 등)은 호텔 도메인(객실·예약·게스트·하우스키핑 등)으로 재설계 예정.
+
+- **GitHub**: github.com/taikmin/the-N-management-system
+- **Package name (pubspec)**: `hotel_management`
+- **App identifier**: `com.taikmin.hotel_management`
+
+## Status
+- ✅ Step 1: 기존 코드 구조 파악 완료 → `docs/legacy-structure-map.md`
+- ✅ Step 2: 원작자 리소스 단절 완료 (Git, Supabase, Resend, 브랜딩, 식별자)
+- ⏳ Step 3 (예정): 2차 플랜 — 호텔 도메인 재설계 (엔티티/스키마/화면 매핑)
 
 ## Tech Stack
 - **Framework**: Flutter 3.38 (Dart 3.10)
-- **UI**: Material 3 (Material You), KIMM Blue #1565C0
+- **UI**: Material 3, **Tiffany Blue `#0ABAB5`** (브랜드 primary)
 - **State Management**: Riverpod (flutter_riverpod, code-gen 미사용)
 - **Routing**: GoRouter (go_router)
-- **Backend**: Supabase (PostgreSQL, Auth, Realtime, Storage)
-- **AI**: Google Gemini 2.5 Pro (회의록 생성, 업무 추출)
-- **STT**: Web Speech API (한국어 음성인식, 웹 전용)
+- **Backend**: Supabase (PostgreSQL, Auth, Realtime, Storage) — 새 프로젝트 `pxkgtciulauiruxsopcg`
 - **Email**: Resend API (활동 요약 이메일)
 - **Scheduler**: pg_cron + pg_net (DB 내 스케줄링)
-- **Deploy**: Vercel (정적 웹 호스팅)
+- **Deploy**: Vercel (미배포, 예정)
 
-## Architecture
-Feature-first 구조:
+## AI/STT 관련 (폐기 예정)
+`gemini_service.dart`, `ai_service.dart`, `recording_provider.dart`, Web Speech API 기반 STT, 회의 녹음/AI 회의록 관련 코드는 호텔 앱에서 사용하지 않기로 결정됨. 2차 플랜 실행 시 제거 예정. 현재는 코드에 남아있으나 새 Supabase에는 관련 스키마가 없어 동작하지 않는다.
+
+## Architecture (현재 = R&D 원본 구조, 호텔용으로 재설계 예정)
 ```
 lib/
-├── app/                    # router.dart, theme.dart, app.dart
-├── core/                   # constants/, services/, extensions/
+├── app/                    # router.dart, theme.dart, app.dart (HotelManagementApp)
+├── core/                   # constants/, services/
 ├── features/
-│   ├── activity/           # 팀 활동 추적 + 로그
-│   ├── auth/               # 인증 (로그인, 회원가입)
-│   ├── calendar/           # 캘린더 뷰
-│   ├── dashboard/          # 대시보드 + 설정
-│   ├── meetings/           # 회의 관리 + AI 회의록 + 녹음
-│   ├── memos/              # 개인 메모
-│   ├── projects/           # 과제 관리
-│   └── tasks/              # 업무 관리
+│   ├── activity/           # 활동 로그 (재사용)
+│   ├── auth/               # 인증 (역할 enum만 호텔용 교체 예정)
+│   ├── calendar/           # 캘린더 (재사용)
+│   ├── dashboard/          # 대시보드 (재사용, 위젯 매핑만 교체)
+│   ├── meetings/           # 회의 (일부 재사용, R&D 워크플로 폐기)
+│   ├── memos/              # 개인 메모 (재사용)
+│   ├── projects/           # → 호텔 도메인 엔티티로 재설계 예정
+│   └── tasks/              # → 하우스키핑/유지보수 티켓 등으로 재정의
 └── shared/                 # 공유 위젯, 모델
 ```
+
+자세한 재사용 판정: `docs/legacy-structure-map.md` 참조.
 
 ## Code Style Rules
 - **Language**: Dart (null safety 필수)
@@ -49,126 +57,53 @@ lib/
 
 ## Git Convention
 - **Commits**: Conventional Commits (feat/fix/docs/refactor/test/chore)
-- **Co-Author**: `Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>`
+- **원격**: `origin` = `github.com/taikmin/the-N-management-system`
+- **주의**: 원작자 저장소(`parkch-meca/project-management-app`)와 연결되지 않도록 remote 확인 필수
 
 ## Commands
 - `flutter run -d chrome`: 웹 실행
-- `flutter test`: 유닛 테스트
+- `flutter test`: 유닛 테스트 (참고: 다수 테스트가 R&D 도메인 기반으로 실패할 수 있음. 호텔 도메인 재설계 시 재작성 필요)
 - `flutter analyze`: 정적 분석
 - `flutter build web --release`: 웹 빌드
 - `flutter pub get`: 의존성 설치
 
 ## Environment
 - `.env` 파일에 키 저장 (git에 포함하지 않음, `.env.example` 참고)
-- 필요 키: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `GEMINI_API_KEY`
-
-## Vercel Deployment Rules
-배포 시 반드시 다음 절차를 따를 것:
-1. `flutter clean`
-2. `flutter build web --release`
-3. `cd build/web && rm -rf .vercel`
-4. `vercel --prod --name rd-task-manager --yes`
-5. 배포 URL이 `rd-task-manager-coral.vercel.app` 인지 확인
-6. **절대 `vercel --prod`만 실행하지 말 것** (`.vercel` 폴더가 잘못된 프로젝트를 가리킬 수 있음)
+- 필요 키: `SUPABASE_URL`, `SUPABASE_ANON_KEY`
+- `GEMINI_API_KEY`: 현재는 `.env`에 남아있으나 폐기 예정
 
 ## External Services
 
-### Gemini AI
-- 모델: `gemini-2.5-pro` (gemini-2.5-flash에서 업그레이드)
-- `.env`의 `GEMINI_API_KEY`에 API 키 설정
-- 청킹: 80,000자 초과 시 15,000자 단위 분할 → 요약 → 병합
-- JSON 파싱: 4단계 폴백 (direct → code block → brace → regex)
-- `responseMimeType: 'application/json'`으로 구조화 출력
+### Supabase
+- 프로젝트: `pxkgtciulauiruxsopcg` (taikmin's Org, Seoul region)
+- Storage 버킷: 호텔 도메인 재설계 시 신규 생성 예정
+- 현재 스키마: **없음** (2차 플랜에서 호텔 스키마 신규 구축)
 
 ### Resend (이메일)
-- `send_activity_digest()` SQL 함수에서 직접 Resend API 호출
-- **발신자: `noreply@sartexo.com`** (커스텀 도메인, 변경 금지)
-- 수신자: `parkch@kimm.re.kr`
-- 함수 수정 시 발신자 주소 반드시 `noreply@sartexo.com` 유지
+- **활성 상태**: 사용자 Resend 키 발급, `send_activity_digest()` SQL 함수에서 호출
+- **수신자**: `lee.taikmin@gmail.com`
+- **발신자**: `onboarding@resend.dev` (Resend 기본; 호텔 브랜드 도메인 준비되면 교체)
+- **참고**: Resend 키가 SQL 함수 body에 하드코딩되어 있음 (개선 필요 → Supabase Vault로 이관 권장)
 
 ### pg_cron + pg_net
 - Supabase Extensions에서 활성화
-- 3시간마다 `send_activity_digest()` 자동 실행
-- cron 표현식: `'0 */3 * * *'`
+- 3시간마다 `send_activity_digest()` 자동 실행 (cron: `'0 */3 * * *'`)
 
 ## Database Migration Rules (Data Preservation)
-- **절대 금지**: `DROP TABLE`, `DROP COLUMN` (운영 데이터 손실 위험)
+- **절대 금지**: `DROP TABLE`, `DROP COLUMN` (운영 데이터 손실 위험) — 단, 초기 호텔 스키마 구축 전 정리 단계에서만 예외
 - **추가만 허용**: 새 테이블, 새 컬럼, 새 인덱스는 자유롭게 추가
 - **IF NOT EXISTS**: 모든 `CREATE TABLE`, `ADD COLUMN`에 반드시 사용
 - **DEFAULT 값**: 기존 테이블에 NOT NULL 컬럼 추가 시 반드시 DEFAULT 지정
 - **롤백 SQL**: 각 마이그레이션에 대응하는 rollback SQL 파일 작성
-- **문서화**: `docs/database-schema.md`에 스키마 변경 반영
 - **SQL 제공**: 마이그레이션 SQL은 Supabase Dashboard에서 수동 실행
 
-## Supabase Table Summary
-
-### profiles
-`id` (UUID PK), `email`, `full_name`, `department`, `position`, `avatar_url`, `role` (pi/researcher/external_), `is_admin`, `default_zoom_link`, `default_zoom_id`, `default_zoom_password`, `created_at`, `updated_at`
-
-### projects
-`id` (UUID PK), `title`, `project_number`, `description`, `status` (planning/active/completed/on_hold/cancelled), `start_date`, `end_date`, `lead_institution`, `co_institutions`, `total_budget`, `owner_id` (FK profiles, 책임자/PI), `assignee_id` (FK profiles, 담당자/실무), `created_at`, `updated_at`
-
-### project_members
-`id`, `project_id` (FK projects), `user_id` (FK profiles), `role` (owner/admin/member/viewer), `joined_at`
-
-### tasks
-`id` (UUID PK), `project_id` (FK projects, nullable=독립), `parent_task_id` (FK tasks, 자기참조), `title`, `description`, `status` (planned/in_progress/delayed/completed/blocked), `priority` (low/medium/high/urgent), `plan_type` (A/B/C), `assignee_id` (FK profiles), `created_by` (FK profiles), `planned_start`, `planned_end`, `actual_start`, `actual_end`, `order_index`, `category`, `color_tag` (red/yellow/blue/none), `show_in_calendar`, `created_at`, `updated_at`
-
-### meetings
-`id` (UUID PK), `project_id` (FK projects), `title`, `meeting_type`, `meeting_mode` (in_person/online/hybrid), `meeting_date`, `location`, `room_name`, `status`, `meal_reservation`, `meal_location`, `expected_attendees`, `description`, `online_platform`, `online_link`, `online_meeting_id`, `online_password`, `meeting_notes` (AI 회의록), `raw_transcript` (음성인식 원문), `creator_id` (FK profiles), `created_at`, `updated_at`
-
-### meeting_timeline
-`id`, `meeting_id` (FK meetings), `milestone`, `label`, `due_date`, `is_completed`, `completed_at`, `notification_sent`, `sort_order`, `created_at`
-
-### meeting_participants / meeting_documents / meeting_agenda
-회의 관련 테이블 (상세는 `docs/database-schema.md` 참조)
-
-### memos
-`id` (UUID PK), `user_id` (FK profiles), `title`, `content`, `category`, `is_pinned`, `priority`, `status`, `created_at`, `updated_at`
-
-### activity_logs
-`id` (UUID PK), `user_id` (FK auth.users), `user_name`, `action` (create/update/delete/complete), `entity_type` (tasks/projects/meetings/memos/meeting_timeline), `entity_id`, `entity_title`, `details` (JSONB, parent_task_title 포함 가능), `created_at`, `notified`
-
-### file_attachments (polymorphic)
-`id`, `file_name`, `file_size`, `mime_type`, `storage_path`, `bucket_name`, `entity_type`, `entity_id`, `uploader_id`, `description`
-
-### daily_logs / task_comments / task_updates
-태스크 관련 기록 테이블 (상세는 `docs/database-schema.md` 참조)
-
-## Key Providers
-
-| Provider | 파일 | 역할 |
-|----------|------|------|
-| `currentUserProvider` | auth_provider.dart | 로그인 사용자 |
-| `projectListProvider` | project_provider.dart | 과제 목록 |
-| `allMyTasksProvider` | task_provider.dart | 전체 업무 |
-| `filteredTasksProvider` | task_provider.dart | 필터된 업무 |
-| `subTasksMapProvider` | task_provider.dart | 하위업무 맵 |
-| `meetingListProvider` | meeting_provider.dart | 회의 목록 |
-| `activityStreamProvider` | activity_provider.dart | 실시간 활동 (24h) |
-| `activityListProvider` | activity_provider.dart | 전체 활동 로그 |
-| `recordingStateProvider` | recording_provider.dart | 녹음 상태 |
-
-## Key DB Functions & Triggers
-
-| 함수 | 역할 |
-|------|------|
-| `log_activity()` | 트리거: tasks/projects/meetings/memos/meeting_timeline 변경 시 activity_logs 자동 기록 |
-| `send_activity_digest()` | pg_cron: 3시간마다 미발송 활동 요약 이메일 (Resend API, pg_net) |
-| `update_updated_at()` | 트리거: updated_at 자동 갱신 |
-| `handle_new_user()` | 트리거: 가입 시 profiles 자동 생성 |
-
 ## Storage Configuration
-Supabase Storage 버킷 (Dashboard에서 수동 생성):
-- `project-files`: 과제 관련 파일
-- `task-files`: 태스크/일일기록 파일
-- `meeting-files`: 회의 관련 파일
+호텔 도메인 재설계 시 신규 버킷 생성 예정 (예: `guest-files`, `room-photos`, `document-uploads` 등).
 
 ## RLS Policy Summary
-**원칙: 메모만 개인, 나머지는 전부 공용 (인증 사용자 공유)**
+2차 플랜에서 호텔 스키마 확정 후 재작성. 원칙은 유지:
 - 대부분 테이블: `auth.uid() IS NOT NULL`이면 CRUD 허용
-- memos: `user_id = auth.uid()`만 접근 (완전 개인)
-- activity_logs: 인증 사용자 조회, 삽입은 트리거(SECURITY DEFINER)
+- memos 등 개인 데이터: `user_id = auth.uid()`만 접근
 
 ## Agent Team Roles (단일 에이전트가 순서대로 수행)
 
@@ -205,23 +140,30 @@ Supabase Storage 버킷 (Dashboard에서 수동 생성):
 - nullable 필드의 copyWith는 `T? Function()?` 패턴 사용
 
 ### 엣지 케이스 방어
-- 브라우저 새로고침/닫기 시 beforeunload 경고 (녹음 데이터 있을 때)
+- 브라우저 새로고침/닫기 시 beforeunload 경고 (사용자 입력 데이터 있을 때)
 - 빈 리스트 상태 처리 (empty state UI)
 - 저장 실패 시 데이터 보존 (절대 사용자 입력 삭제 금지)
 
 ### 배포 전 체크리스트
 1. `flutter analyze` — 정적 분석 통과
-2. `flutter test` — 기존 테스트 통과
+2. `flutter test` — 기존 테스트 통과 (2차 플랜 이후 호텔용으로 재작성)
 3. `flutter build web --release` — 웹 빌드 성공
 4. Vercel 배포 및 GitHub push
 
 ## Known Issues & Warnings
-- Vercel 배포 시 `.vercel` 폴더 삭제 필수
-- `send_activity_digest()` 수정 시 발신자 `noreply@sartexo.com` 유지
-- Web Speech API: `dart:js_interop_unsafe`로 런타임 프로퍼티 접근
+- 로컬 폴더명에 오타 있음 (`the-N-magnagement-system` → `management`로 수정 예정, 세션 종료 후)
+- 현재 앱 실행 시 새 빈 Supabase에 연결되므로 대부분 화면이 데이터 없음/에러로 나타남 (정상 — 스키마 미구축 상태)
+- Gemini API 키가 `.env`에 남아있으나 코드에서 실제 호출 시 유효한 응답 없을 것 (Gemini 폐기 예정)
+- Web Speech API: `dart:js_interop_unsafe`로 런타임 프로퍼티 접근 (Gemini와 함께 폐기 예정)
 - Conditional imports: `export 'stub.dart' if (dart.library.js_interop) 'web.dart'`
 - DropdownButtonFormField: `initialValue` 사용 (Flutter 3.38+)
 - Wildcard pattern: `(_, _)` 사용 (not `(_, __)`)
-- PlanType: `value` 프로퍼티 사용 (not `label`)
+- PlanType: `value` 프로퍼티 사용 (not `label`) — R&D 잔재, 폐기 대상
 - FileOptions: `supabase_flutter`에서 import
 - Realtime: tasks 채널에 사용자 필터 없음 (전체 변경 구독)
+
+## 참고 문서
+- `docs/legacy-structure-map.md` — 원본 R&D 구조와 재사용 판정 상세
+- `docs/architecture.md` — 원작자 작성 아키텍처 (참고용, 호텔 재설계 시 업데이트)
+- `docs/database-schema.md` — 원작자 작성 스키마 (참고용, 호텔용 재작성 예정)
+- `README.md`, `README.html`, `CHANGELOG.md` — 원작자 작성, 아직 호텔용으로 갱신 안 됨

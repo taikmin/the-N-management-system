@@ -1,5 +1,5 @@
-name: rd_task_manager
-description: "KIMM R&D 과제 통합 관리 앱"
+name: hotel_management
+description: "The N Resort Management"
 publish_to: 'none'
 version: 0.1.0+1
 

@@ -2,8 +2,8 @@
 class AppStrings {
   AppStrings._();
 
-  static const String appName = 'R&D Task Manager';
-  static const String appDescription = 'KIMM R&D 과제 통합 관리';
+  static const String appName = 'The N Resort Management';
+  static const String appDescription = 'The N Resort 관리 시스템';
 
   // Auth
   static const String login = '로그인';
