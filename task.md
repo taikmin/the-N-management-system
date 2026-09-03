@@ -76,21 +76,21 @@
 ### 마이그레이션 SQL 작성
 | ID | 태스크 | DoD | 의존 | 상태 |
 |---|---|---|---|---|
-| T-3A-01 | `hotel_001_profiles_alter.sql` — role enum 교체, department_id 추가, Zoom 필드 제거 | SQL 파일 존재, syntax check | - | ⏳ |
-| T-3A-02 | `hotel_002_departments.sql` — departments 테이블 + 5개 기본 seed | SQL 파일, seed 포함 | T-3A-01 | ⏳ |
-| T-3A-03 | `hotel_003_tasks_alter.sql` — tasks 필드 재정의 (recurrence, delay_reason 등) | SQL 파일 | - | ⏳ |
-| T-3A-04 | `hotel_004_settings.sql` — app_settings, digest_recipients | SQL 파일 | - | ⏳ |
-| T-3A-05 | `hotel_005_activity_logs_alter.sql` — entity_type 축소 | SQL 파일 | - | ⏳ |
-| T-3A-06 | `hotel_006_drop_legacy.sql` — projects/meetings/*/daily_logs/task_updates/task_comments DROP | SQL 파일 | 위 모두 | ⏳ |
-| T-3A-07 | `hotel_007_functions.sql` — handle_new_user, log_activity, send_daily_digest, generate_recurring_tasks | SQL 파일 | T-3A-06 | ⏳ |
-| T-3A-08 | `hotel_008_rls.sql` — 역할별 RLS 정책 | SQL 파일 | T-3A-07 | ⏳ |
-| T-3A-09 | `hotel_009_cron.sql` — pg_cron 잡 등록 (digest 매시, recurring 매일 자정) | SQL 파일 | T-3A-07 | ⏳ |
+| T-3A-01 | `hotel_001_profiles_alter.sql` — role enum 교체, department_id 추가, Zoom 필드 제거 | SQL 파일 존재, syntax check | - | ✅ |
+| T-3A-02 | `hotel_002_departments.sql` — departments 테이블 + 5개 기본 seed | SQL 파일, seed 포함 | T-3A-01 | ✅ |
+| T-3A-03 | `hotel_003_tasks_alter.sql` — tasks 필드 재정의 (recurrence, delay_reason 등) | SQL 파일 | - | ✅ |
+| T-3A-04 | `hotel_004_settings.sql` — app_settings, digest_recipients | SQL 파일 | - | ✅ |
+| T-3A-05 | `hotel_005_activity_logs_alter.sql` — entity_type 축소 | SQL 파일 | - | ✅ |
+| T-3A-06 | `hotel_006_drop_legacy.sql` — projects/meetings/*/daily_logs/task_updates/task_comments DROP | SQL 파일 | 위 모두 | ✅ |
+| T-3A-07 | `hotel_007_functions.sql` — handle_new_user, log_activity, send_daily_digest, generate_recurring_tasks | SQL 파일 | T-3A-06 | ✅ |
+| T-3A-08 | `hotel_008_rls.sql` — 역할별 RLS 정책 | SQL 파일 | T-3A-07 | ✅ |
+| T-3A-09 | `hotel_009_cron.sql` — pg_cron 잡 등록 (digest 매시, recurring 매일 자정) | SQL 파일 | T-3A-07 | ✅ |
 
 ### Supabase 적용
 | ID | 태스크 | DoD | 의존 | 상태 |
 |---|---|---|---|---|
-| T-3B-01 | 사용자에게 SQL 파일 순차 실행 안내 문서 (`docs/schema-migration-guide.md`) | 문서 존재 | T-3A-01~09 | ⏳ |
-| T-3B-02 | Supabase Dashboard에서 SQL 순차 실행 (사용자 수행) | 모든 테이블/함수/cron 존재 | T-3B-01 | ⏳ |
+| T-3B-01 | 사용자에게 SQL 파일 순차 실행 안내 문서 (`docs/schema-migration-guide.md`) | 문서 존재 | T-3A-01~09 | ✅ |
+| T-3B-02 | Supabase Dashboard에서 SQL 순차 실행 (사용자 수행) | 모든 테이블/함수/cron 존재 | T-3B-01 | ✅ |
 | T-3B-03 | Storage 버킷 생성 (`task-photos` 또는 재사용) | 버킷 존재 | T-3B-02 | ⏳ |
 | T-3B-04 | RESEND_API_KEY를 Supabase Vault 또는 SQL 함수에 설정 | send_daily_digest 실행 시 이메일 발송 성공 | T-3B-02 | ⏳ |
 | T-3B-05 | `send_daily_digest()` 수동 호출 → 이메일 수신 확인 | 대표 이메일 수신 | T-3B-04 | ⏳ |
