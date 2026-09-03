@@ -34,8 +34,8 @@
 | T-2A-03 | STT 관련 파일 삭제 (`speech_recognition_*.dart`, `speech_service.dart`) | 파일 부재 | - | ✅ |
 | T-2A-04 | `recording_provider.dart` 및 관련 provider 삭제 | 파일 부재, 참조 없음 | T-2A-03 | ✅ |
 | T-2A-05 | `floating_recording_controller.dart` 삭제 | 파일 부재 | - | ✅ |
-| T-2A-06 | `lib/features/tasks/**/daily_log*.dart`, `daily_check_screen.dart` 삭제 | 파일 부재 | - | ⏳ |
-| T-2A-07 | `lib/features/tasks/**/task_updates*.dart`, `task_comments*.dart` 삭제 | 파일 부재 | - | ⏳ |
+| T-2A-06 | `lib/features/tasks/**/daily_log*.dart`, `daily_check_screen.dart` 삭제 | 파일 부재 | - | ✅ |
+| T-2A-07 | `lib/features/tasks/**/task_updates*.dart`, `task_comments*.dart` 삭제 | 파일 부재 | - | ✅ |
 | T-2A-08 | `.env`에서 `GEMINI_API_KEY` 제거 | 키 부재 | T-2A-02 | ✅ |
 
 ### 라우팅/네비게이션
@@ -128,14 +128,14 @@
 ### C-3: Tasks 핵심 개조
 | ID | 태스크 | DoD | 의존 | 상태 |
 |---|---|---|---|---|
-| T-4C-01 | `task.dart` 모델 재정의 (신규 필드, 폐기 필드) | 필드 매핑 완료, JSON 파싱 | Step 3 | ⏳ |
-| T-4C-02 | `TaskStatus` enum 재정의 (assigned/inProgress/completed/incomplete/delayed) | enum 값 5개 | T-4C-01 | ⏳ |
-| T-4C-03 | Repository/Provider 수정 | 새 스키마 반영 | T-4C-01 | ⏳ |
-| T-4C-04 | `TaskListScreen` 필터/정렬 재구성 (오늘/이번주/미완료/부서별) | 필터 4종+ 정렬 3종 동작 | T-4C-03 | ⏳ |
-| T-4C-05 | `TaskCreateScreen` 관리자용 지시 화면 + 반복 패턴 UI | 반복 옵션 (일/주/월) 선택 UI | T-4C-03 | ⏳ |
-| T-4C-06 | `TaskDetailScreen` 지시 내용 + 보고 상태 + 사진 표시 | 상세 정보/사진 갤러리 | T-4C-03 | ⏳ |
-| T-4C-07 | `TaskReportSheet` (신규) 하단 시트 — 완료/미완료, 메모/사유, 사진 첨부 | 미완료 선택 시 delay_reason 필수 검증 | T-4C-03 | ⏳ |
-| T-4C-08 | 사진 첨부: file_attachments 재사용 | 업로드/미리보기 동작 | T-4C-07 | ⏳ |
+| T-4C-01 | `task.dart` 모델 재정의 (신규 필드, 폐기 필드) | 필드 매핑 완료, JSON 파싱 | Step 3 | ✅ |
+| T-4C-02 | `TaskStatus` enum 재정의 (assigned/inProgress/completed/incomplete/delayed) | enum 값 5개 | T-4C-01 | ✅ |
+| T-4C-03 | Repository/Provider 수정 | 새 스키마 반영 | T-4C-01 | ✅ |
+| T-4C-04 | `TaskListScreen` 필터/정렬 재구성 (오늘/이번주/미완료/부서별) | 필터 4종+ 정렬 3종 동작 | T-4C-03 | ✅ |
+| T-4C-05 | `TaskCreateScreen` 관리자용 지시 화면 + 반복 패턴 UI | 반복 옵션 (일/주/월) 선택 UI | T-4C-03 | ✅ |
+| T-4C-06 | `TaskDetailScreen` 지시 내용 + 보고 상태 + 사진 표시 | 상세 정보/사진 갤러리 | T-4C-03 | ✅ |
+| T-4C-07 | `TaskReportSheet` (신규) 하단 시트 — 완료/미완료, 메모/사유, 사진 첨부 | 미완료 선택 시 delay_reason 필수 검증 | T-4C-03 | ✅ |
+| T-4C-08 | 사진 첨부: file_attachments 재사용 | 업로드/미리보기 동작 | T-4C-07 | ✅ |
 
 ### C-4: Dashboard 역할별 뷰
 | ID | 태스크 | DoD | 의존 | 상태 |
@@ -148,10 +148,10 @@
 ### C-5 ~ C-9
 | ID | 태스크 | DoD | 의존 | 상태 |
 |---|---|---|---|---|
-| T-4E-01 | Calendar `CalendarEventType` enum 단순화 (task 중심) | enum 조정 | T-4C-01 | ⏳ |
+| T-4E-01 | Calendar `CalendarEventType` enum 단순화 (task 중심) | enum 조정 | T-4C-01 | ✅ |
 | T-4E-02 | Calendar에서 meeting 이벤트 소스 제거 | 참조 없음 | T-4E-01 | ⏳ |
 | T-4F-01 | Memos 브랜딩 문자열 확인/조정 | R&D 잔재 0 | - | ⏳ |
-| T-4G-01 | Activity Logs entity_type 매핑 갱신 (tasks/departments/memos) | 아이콘/라벨 반영 | T-4C-01 | ⏳ |
+| T-4G-01 | Activity Logs entity_type 매핑 갱신 (tasks/departments/memos) | 아이콘/라벨 반영 | T-4C-01 | ✅ |
 | T-4H-01 | Navigation Shell 탭 재구성 (5개: 대시보드/업무/캘린더/메모/설정) | 탭 5개 렌더링 | T-2B-02 | ✅ |
 | T-4H-02 | 관리자 전용 메뉴 (부서 관리/직원 관리/활동 로그) 위치 결정 및 반영 | 관리자 로그인 시 노출 | T-4A-01 | ✅ |
 | T-4H-03 | SettingsScreen: 다이제스트 수신자 관리 + 발송 시각 설정 | CRUD + TimePicker | Step 3 | ⏳ |

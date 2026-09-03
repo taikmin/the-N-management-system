@@ -1,9 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../app/supabase_config.dart';
+import '../../tasks/providers/task_provider.dart';
 import '../domain/models/calendar_event.dart';
 
 // ─── Filter State ───
 
-/// 이벤트 유형별 토글 필터 (현재 task만 있음)
 final calendarEventTypeFilterProvider =
     StateProvider<Set<CalendarEventType>>((ref) {
   return CalendarEventType.values.toSet();
@@ -13,39 +14,59 @@ final calendarEventTypeFilterProvider =
 final calendarDepartmentFilterProvider =
     StateProvider<String?>((ref) => null);
 
-/// TODO(Step 4 C-5): 캘린더 화면 리팩터링 후 제거될 별칭
+/// TODO(Step 4 C-5): calendar_screen 리팩터링 시 제거될 별칭
 final calendarProjectFilterProvider = calendarDepartmentFilterProvider;
 
-/// TODO(Step 4 C-5): 캘린더 화면이 아직 참조 중인 임시 stub
-final projectListProvider =
-    Provider<AsyncValue<List<dynamic>>>((ref) =>
-        const AsyncValue.data(<dynamic>[]));
+/// TODO(Step 4 C-5): calendar_screen이 아직 참조 중인 임시 stub
+final projectListProvider = Provider<AsyncValue<List<dynamic>>>(
+    (ref) => const AsyncValue.data(<dynamic>[]));
 
-/// 내 담당만 보기
 final calendarMyOnlyProvider = StateProvider<bool>((ref) => false);
 
-/// 현재 선택된 날짜
 final calendarSelectedDayProvider =
     StateProvider<DateTime>((ref) => DateTime.now());
 
-/// 현재 포커스 월
 final calendarFocusedDayProvider =
     StateProvider<DateTime>((ref) => DateTime.now());
 
 // ─── Data Aggregation ───
 
-/// 모든 이벤트를 통합한 Provider
-///
-/// TODO(Step 4 C-3): Tasks 모델 재구성 후 due_date 기반 이벤트 다시 추가.
-/// 현재는 Task 모델이 R&D 필드(plannedStart/End)만 있어 캘린더 소스 임시 비활성.
+/// Tasks의 due_date 기반 이벤트 (호텔 도메인)
 final calendarEventsProvider =
     Provider<AsyncValue<List<CalendarEvent>>>((ref) {
-  // 필터 상태만 유지 (UI가 참조 중)
-  ref.watch(calendarEventTypeFilterProvider);
-  ref.watch(calendarDepartmentFilterProvider);
-  ref.watch(calendarMyOnlyProvider);
+  final tasksAsync = ref.watch(allMyTasksProvider);
+  final typeFilter = ref.watch(calendarEventTypeFilterProvider);
+  final deptFilter = ref.watch(calendarDepartmentFilterProvider);
+  final myOnly = ref.watch(calendarMyOnlyProvider);
 
-  return const AsyncValue.data(<CalendarEvent>[]);
+  if (tasksAsync.isLoading) return const AsyncValue.loading();
+
+  final events = <CalendarEvent>[];
+  if (typeFilter.contains(CalendarEventType.task)) {
+    final currentUserId = SupabaseConfig.auth.currentUser?.id;
+    final tasks = tasksAsync.valueOrNull ?? [];
+    for (final t in tasks) {
+      if (!t.showInCalendar) continue;
+      if (deptFilter != null && t.departmentId != deptFilter) continue;
+      if (myOnly && t.assigneeId != currentUserId) continue;
+      if (t.dueDate == null) continue;
+      if (t.isTemplate) continue; // 템플릿은 캘린더에 표시 안 함
+
+      events.add(CalendarEvent(
+        id: 'task_${t.id}',
+        type: CalendarEventType.task,
+        title: t.title,
+        date: t.dueDate!,
+        subtitle: '${t.status.label}'
+            '${t.departmentName != null ? ' · ${t.departmentName}' : ''}',
+        isAllDay: t.dueTime == null,
+        isDelayed: t.isDelayed,
+        routePath: '/tasks/${t.id}',
+      ));
+    }
+  }
+  events.sort((a, b) => a.date.compareTo(b.date));
+  return AsyncValue.data(events);
 });
 
 /// 특정 날짜의 이벤트 목록

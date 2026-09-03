@@ -1,106 +1,130 @@
-/// 태스크 모델
+/// 호텔 업무 모델
 class Task {
   const Task({
     required this.id,
-    this.projectId,
-    this.parentTaskId,
     required this.title,
     this.description,
-    this.status = TaskStatus.planned,
-    this.priority = TaskPriority.medium,
-    this.planType = PlanType.a,
+    this.departmentId,
+    this.departmentName,
+    this.assignerId,
+    this.assignerName,
     this.assigneeId,
     this.assigneeName,
-    this.createdBy,
-    this.creatorName,
-    this.plannedStart,
-    this.plannedEnd,
-    this.actualStart,
-    this.actualEnd,
-    this.orderIndex = 0,
     this.category,
-    this.colorTag = ColorTag.none,
-    this.showInCalendar = false,
-    this.projectTitle,
-    this.subTasks = const [],
+    this.priority = TaskPriority.normal,
+    this.status = TaskStatus.assigned,
+    this.dueDate,
+    this.dueTime,
+    this.completedAt,
+    this.completionNote,
+    this.delayReason,
+    this.showInCalendar = true,
+    this.recurrencePattern,
+    this.recurrenceTemplateId,
     this.createdAt,
     this.updatedAt,
   });
 
   final String id;
-  final String? projectId;
-  final String? parentTaskId;
   final String title;
   final String? description;
-  final TaskStatus status;
-  final TaskPriority priority;
-  final PlanType planType;
+  final String? departmentId;
+  final String? departmentName;
+  final String? assignerId;
+  final String? assignerName;
   final String? assigneeId;
   final String? assigneeName;
-  final String? createdBy;
-  final String? creatorName;
-  final DateTime? plannedStart;
-  final DateTime? plannedEnd;
-  final DateTime? actualStart;
-  final DateTime? actualEnd;
-  final int orderIndex;
   final String? category;
-  final ColorTag colorTag;
+  final TaskPriority priority;
+  final TaskStatus status;
+  final DateTime? dueDate;
+  final String? dueTime; // 'HH:mm'
+  final DateTime? completedAt;
+  final String? completionNote;
+  final String? delayReason;
   final bool showInCalendar;
-  final String? projectTitle;
-  final List<Task> subTasks;
+
+  /// 반복 패턴 (null = 일회성)
+  final String? recurrencePattern;
+
+  /// 반복 템플릿에서 생성된 인스턴스면 원본 템플릿 ID
+  final String? recurrenceTemplateId;
+
   final DateTime? createdAt;
   final DateTime? updatedAt;
+
+  bool get isTemplate =>
+      recurrencePattern != null && recurrenceTemplateId == null;
+  bool get isInstance => recurrenceTemplateId != null;
+
+  bool get isDueToday {
+    if (dueDate == null) return false;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final d = DateTime(dueDate!.year, dueDate!.month, dueDate!.day);
+    return d == today;
+  }
+
+  bool get isDelayed {
+    if (status == TaskStatus.completed) return false;
+    if (status == TaskStatus.delayed) return true;
+    if (dueDate == null) return false;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final d = DateTime(dueDate!.year, dueDate!.month, dueDate!.day);
+    return d.isBefore(today);
+  }
+
+  int? get delayDays {
+    if (!isDelayed || dueDate == null) return null;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final d = DateTime(dueDate!.year, dueDate!.month, dueDate!.day);
+    return today.difference(d).inDays;
+  }
+
+  int? get daysUntilDue {
+    if (dueDate == null) return null;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final d = DateTime(dueDate!.year, dueDate!.month, dueDate!.day);
+    return d.difference(today).inDays;
+  }
 
   factory Task.fromJson(Map<String, dynamic> json) {
     return Task(
       id: json['id'] as String,
-      projectId: json['project_id'] as String?,
-      parentTaskId: json['parent_task_id'] as String?,
       title: json['title'] as String,
       description: json['description'] as String?,
-      status: TaskStatus.fromString(
-        json['status'] as String? ?? 'planned',
-      ),
-      priority: TaskPriority.fromString(
-        json['priority'] as String? ?? 'medium',
-      ),
-      planType: PlanType.fromString(
-        json['plan_type'] as String? ?? 'A',
-      ),
+      departmentId: json['department_id'] as String?,
+      departmentName: json['department'] != null
+          ? (json['department'] as Map<String, dynamic>)['name'] as String?
+          : null,
+      assignerId: json['assigner_id'] as String?,
+      assignerName: json['assigner'] != null
+          ? (json['assigner'] as Map<String, dynamic>)['full_name'] as String?
+          : null,
       assigneeId: json['assignee_id'] as String?,
-      assigneeName: json['profiles'] != null
-          ? (json['profiles']
-              as Map<String, dynamic>)['full_name'] as String?
+      assigneeName: json['assignee'] != null
+          ? (json['assignee'] as Map<String, dynamic>)['full_name'] as String?
           : null,
-      createdBy: json['created_by'] as String?,
-      creatorName: json['creator'] != null
-          ? (json['creator']
-              as Map<String, dynamic>)['full_name'] as String?
-          : null,
-      plannedStart: json['planned_start'] != null
-          ? DateTime.parse(json['planned_start'] as String)
-          : null,
-      plannedEnd: json['planned_end'] != null
-          ? DateTime.parse(json['planned_end'] as String)
-          : null,
-      actualStart: json['actual_start'] != null
-          ? DateTime.parse(json['actual_start'] as String)
-          : null,
-      actualEnd: json['actual_end'] != null
-          ? DateTime.parse(json['actual_end'] as String)
-          : null,
-      orderIndex: json['order_index'] as int? ?? 0,
       category: json['category'] as String?,
-      colorTag: ColorTag.fromString(
-        json['color_tag'] as String? ?? 'none',
-      ),
-      showInCalendar:
-          json['show_in_calendar'] as bool? ?? true,
-      projectTitle: json['projects'] != null
-          ? (json['projects']
-              as Map<String, dynamic>)['title'] as String?
+      priority: TaskPriority.fromString(
+          json['priority'] as String? ?? 'normal'),
+      status:
+          TaskStatus.fromString(json['status'] as String? ?? 'assigned'),
+      dueDate: json['due_date'] != null
+          ? DateTime.parse(json['due_date'] as String)
           : null,
+      dueTime: json['due_time'] as String?,
+      completedAt: json['completed_at'] != null
+          ? DateTime.parse(json['completed_at'] as String)
+          : null,
+      completionNote: json['completion_note'] as String?,
+      delayReason: json['delay_reason'] as String?,
+      showInCalendar: json['show_in_calendar'] as bool? ?? true,
+      recurrencePattern: json['recurrence_pattern'] as String?,
+      recurrenceTemplateId: json['recurrence_template_id'] as String?,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : null,
@@ -110,185 +134,97 @@ class Task {
     );
   }
 
-  Map<String, dynamic> toInsertJson() {
-    final json = <String, dynamic>{
-      'parent_task_id': parentTaskId,
-      'title': title,
-      'description': description,
-      'status': status.dbValue,
-      'priority': priority.name,
-      'plan_type': planType.value,
-      'assignee_id': assigneeId,
-      'planned_start':
-          plannedStart?.toIso8601String().split('T').first,
-      'planned_end':
-          plannedEnd?.toIso8601String().split('T').first,
-      'actual_start':
-          actualStart?.toIso8601String().split('T').first,
-      'actual_end':
-          actualEnd?.toIso8601String().split('T').first,
-      'order_index': orderIndex,
-      'category': category,
-      'color_tag': colorTag.value,
-      'show_in_calendar': showInCalendar,
-    };
-    if (projectId != null) {
-      json['project_id'] = projectId;
-    }
-    return json;
-  }
+  Map<String, dynamic> toInsertJson() => {
+        'title': title,
+        'description': description,
+        'department_id': departmentId,
+        'assigner_id': assignerId,
+        'assignee_id': assigneeId,
+        'category': category,
+        'priority': priority.name,
+        'status': status.name,
+        'due_date': dueDate?.toIso8601String().split('T').first,
+        'due_time': dueTime,
+        'completion_note': completionNote,
+        'delay_reason': delayReason,
+        'show_in_calendar': showInCalendar,
+        'recurrence_pattern': recurrencePattern,
+        'recurrence_template_id': recurrenceTemplateId,
+      };
 
-  Map<String, dynamic> toUpdateJson() {
-    return {
-      'title': title,
-      'description': description,
-      'status': status.dbValue,
-      'priority': priority.name,
-      'plan_type': planType.value,
-      'assignee_id': assigneeId,
-      'planned_start':
-          plannedStart?.toIso8601String().split('T').first,
-      'planned_end':
-          plannedEnd?.toIso8601String().split('T').first,
-      'actual_start':
-          actualStart?.toIso8601String().split('T').first,
-      'actual_end':
-          actualEnd?.toIso8601String().split('T').first,
-      'order_index': orderIndex,
-      'category': category,
-      'color_tag': colorTag.value,
-      'show_in_calendar': showInCalendar,
-      'project_id': projectId,
-    };
-  }
+  Map<String, dynamic> toUpdateJson() => toInsertJson();
 
   Task copyWith({
-    String? id,
-    String? Function()? projectId,
-    String? parentTaskId,
     String? title,
-    String? description,
-    TaskStatus? status,
-    TaskPriority? priority,
-    PlanType? planType,
-    String? assigneeId,
-    String? assigneeName,
-    String? createdBy,
-    String? creatorName,
-    DateTime? plannedStart,
-    DateTime? plannedEnd,
-    DateTime? actualStart,
-    DateTime? actualEnd,
-    int? orderIndex,
+    String? Function()? description,
+    String? Function()? departmentId,
+    String? Function()? assigneeId,
     String? Function()? category,
-    ColorTag? colorTag,
+    TaskPriority? priority,
+    TaskStatus? status,
+    DateTime? Function()? dueDate,
+    String? Function()? dueTime,
+    DateTime? Function()? completedAt,
+    String? Function()? completionNote,
+    String? Function()? delayReason,
     bool? showInCalendar,
-    String? projectTitle,
-    List<Task>? subTasks,
+    String? Function()? recurrencePattern,
   }) {
     return Task(
-      id: id ?? this.id,
-      projectId:
-          projectId != null ? projectId() : this.projectId,
-      parentTaskId: parentTaskId ?? this.parentTaskId,
+      id: id,
       title: title ?? this.title,
-      description: description ?? this.description,
-      status: status ?? this.status,
+      description: description != null ? description() : this.description,
+      departmentId:
+          departmentId != null ? departmentId() : this.departmentId,
+      departmentName: departmentName,
+      assignerId: assignerId,
+      assignerName: assignerName,
+      assigneeId: assigneeId != null ? assigneeId() : this.assigneeId,
+      assigneeName: assigneeName,
+      category: category != null ? category() : this.category,
       priority: priority ?? this.priority,
-      planType: planType ?? this.planType,
-      assigneeId: assigneeId ?? this.assigneeId,
-      assigneeName: assigneeName ?? this.assigneeName,
-      createdBy: createdBy ?? this.createdBy,
-      creatorName: creatorName ?? this.creatorName,
-      plannedStart: plannedStart ?? this.plannedStart,
-      plannedEnd: plannedEnd ?? this.plannedEnd,
-      actualStart: actualStart ?? this.actualStart,
-      actualEnd: actualEnd ?? this.actualEnd,
-      orderIndex: orderIndex ?? this.orderIndex,
-      category:
-          category != null ? category() : this.category,
-      colorTag: colorTag ?? this.colorTag,
-      showInCalendar:
-          showInCalendar ?? this.showInCalendar,
-      projectTitle: projectTitle ?? this.projectTitle,
-      subTasks: subTasks ?? this.subTasks,
+      status: status ?? this.status,
+      dueDate: dueDate != null ? dueDate() : this.dueDate,
+      dueTime: dueTime != null ? dueTime() : this.dueTime,
+      completedAt: completedAt != null ? completedAt() : this.completedAt,
+      completionNote:
+          completionNote != null ? completionNote() : this.completionNote,
+      delayReason: delayReason != null ? delayReason() : this.delayReason,
+      showInCalendar: showInCalendar ?? this.showInCalendar,
+      recurrencePattern: recurrencePattern != null
+          ? recurrencePattern()
+          : this.recurrencePattern,
+      recurrenceTemplateId: recurrenceTemplateId,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
   }
-
-  /// 지연 여부 (계획 종료일 초과 && 미완료)
-  bool get isDelayed {
-    if (plannedEnd == null) return false;
-    if (status == TaskStatus.completed) return false;
-    return DateTime.now().isAfter(plannedEnd!);
-  }
-
-  /// 지연 일수
-  int get delayDays {
-    if (!isDelayed || plannedEnd == null) return 0;
-    return DateTime.now().difference(plannedEnd!).inDays;
-  }
-
-  /// 오늘 해야 할 태스크인지
-  bool get isDueToday {
-    if (plannedEnd == null) return false;
-    final now = DateTime.now();
-    return plannedEnd!.year == now.year &&
-        plannedEnd!.month == now.month &&
-        plannedEnd!.day == now.day;
-  }
-
-  /// 24시간 이내 생성 여부
-  bool get isNew =>
-      createdAt != null &&
-      DateTime.now().difference(createdAt!).inHours < 24;
-
-  /// 24시간 이내 완료 여부
-  bool get isRecentlyCompleted =>
-      status == TaskStatus.completed &&
-      updatedAt != null &&
-      DateTime.now().difference(updatedAt!).inHours < 24;
-
-  /// 독립 태스크인지
-  bool get isIndependent => projectId == null;
-
-  /// 표시용 소속 텍스트 (과제명 또는 카테고리)
-  String get belongsToLabel {
-    if (projectTitle != null) return projectTitle!;
-    if (category != null && category!.isNotEmpty) {
-      return category!;
-    }
-    if (isIndependent) return '독립 업무';
-    return '';
-  }
 }
 
-/// 태스크 상태
 enum TaskStatus {
-  planned('계획'),
-  inProgress('진행'),
-  delayed('지연'),
+  assigned('지시됨'),
+  inProgress('진행중'),
   completed('완료'),
-  blocked('진행불가');
+  incomplete('미완료'),
+  delayed('지연');
 
   const TaskStatus(this.label);
   final String label;
 
   static TaskStatus fromString(String value) {
     switch (value) {
-      case 'planned':
-        return TaskStatus.planned;
+      case 'assigned':
+        return TaskStatus.assigned;
       case 'in_progress':
         return TaskStatus.inProgress;
-      case 'delayed':
-        return TaskStatus.delayed;
       case 'completed':
         return TaskStatus.completed;
-      case 'blocked':
-        return TaskStatus.blocked;
+      case 'incomplete':
+        return TaskStatus.incomplete;
+      case 'delayed':
+        return TaskStatus.delayed;
       default:
-        return TaskStatus.planned;
+        return TaskStatus.assigned;
     }
   }
 
@@ -302,62 +238,82 @@ enum TaskStatus {
   }
 }
 
-/// 우선순위
 enum TaskPriority {
-  low('낮음'),
-  medium('보통'),
-  high('높음'),
-  urgent('긴급');
+  low('낮음', 1),
+  normal('보통', 2),
+  high('높음', 3),
+  urgent('긴급', 4);
 
-  const TaskPriority(this.label);
+  const TaskPriority(this.label, this.sortOrder);
   final String label;
+  final int sortOrder;
 
   static TaskPriority fromString(String value) {
     return TaskPriority.values.firstWhere(
       (p) => p.name == value,
-      orElse: () => TaskPriority.medium,
+      orElse: () => TaskPriority.normal,
     );
   }
 }
 
-/// Plan 유형
-enum PlanType {
-  a('A'),
-  b('B'),
-  c('C');
+/// 반복 패턴 인코딩 도우미
+class RecurrencePattern {
+  final RecurrenceKind kind;
 
-  const PlanType(this.value);
-  final String value;
+  /// weekly: 요일 코드 (mon..sun)
+  /// monthly: 일자 (1..31)
+  final List<String> args;
 
-  static PlanType fromString(String value) {
-    switch (value.toUpperCase()) {
-      case 'A':
-        return PlanType.a;
-      case 'B':
-        return PlanType.b;
-      case 'C':
-        return PlanType.c;
+  const RecurrencePattern(this.kind, [this.args = const []]);
+
+  static const List<String> weekDayCodes = [
+    'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'
+  ];
+
+  static const Map<String, String> weekDayLabels = {
+    'mon': '월', 'tue': '화', 'wed': '수', 'thu': '목',
+    'fri': '금', 'sat': '토', 'sun': '일',
+  };
+
+  static RecurrencePattern? tryParse(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return null;
+    final parts = raw.split(':');
+    final kindStr = parts[0];
+    final args = parts.length > 1 ? parts[1].split(',') : <String>[];
+    switch (kindStr) {
+      case 'daily':
+        return const RecurrencePattern(RecurrenceKind.daily);
+      case 'weekly':
+        return RecurrencePattern(RecurrenceKind.weekly, args);
+      case 'monthly':
+        return RecurrencePattern(RecurrenceKind.monthly, args);
       default:
-        return PlanType.a;
+        return null;
+    }
+  }
+
+  String encode() {
+    switch (kind) {
+      case RecurrenceKind.daily:
+        return 'daily';
+      case RecurrenceKind.weekly:
+        return 'weekly:${args.join(',')}';
+      case RecurrenceKind.monthly:
+        return 'monthly:${args.join(',')}';
+    }
+  }
+
+  String get displayLabel {
+    switch (kind) {
+      case RecurrenceKind.daily:
+        return '매일';
+      case RecurrenceKind.weekly:
+        final days = args.map((c) => weekDayLabels[c] ?? c).join(',');
+        return '매주 $days';
+      case RecurrenceKind.monthly:
+        return '매월 ${args.join(',')}일';
     }
   }
 }
 
-/// 색상 태그
-enum ColorTag {
-  none('none', '없음'),
-  red('red', '긴급'),
-  yellow('yellow', '중요'),
-  blue('blue', '일반');
-
-  const ColorTag(this.value, this.label);
-  final String value;
-  final String label;
-
-  static ColorTag fromString(String value) {
-    return ColorTag.values.firstWhere(
-      (c) => c.value == value,
-      orElse: () => ColorTag.none,
-    );
-  }
-}
+enum RecurrenceKind { daily, weekly, monthly }

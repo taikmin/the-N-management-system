@@ -1,6 +1,6 @@
 # The N Resort Management — 진행 현황
 
-> 마지막 업데이트: 2026-09-03 (Step 4 C-2 완료)
+> 마지막 업데이트: 2026-09-03 (Step 4 C-3 완료)
 
 ---
 
@@ -27,6 +27,21 @@
 ---
 
 ## 진행 중 (🟡)
+
+- ✅ **Step 4 C-3: Tasks 핵심 개조 완료** (2026-09-03)
+  - Task 모델 재작성: `departmentId/assignerId/dueDate/dueTime/completionNote/delayReason/recurrencePattern/recurrenceTemplateId` 신규
+  - TaskStatus enum: `assigned/inProgress/completed/incomplete/delayed` (5개)
+  - TaskPriority enum: `low/normal/high/urgent`
+  - RecurrencePattern 도우미 클래스 (daily/weekly:mon,wed,fri/monthly:1,15 파싱·표시)
+  - TaskRepository 재작성: 부서별/담당자별/오늘 조회, updateStatus 통합 (완료 시각·사유·메모 함께)
+  - task_provider: 필터/정렬 재정의, `filteredTasksProvider`, `tasksByDepartmentProvider`, `taskInstancesProvider` 등
+  - TaskListScreen 재작성 (약 2000줄 → 300줄): 상태 필터 chip + 부서 필터 dropdown + 검색 + 정렬 + 카드 리스트
+  - TaskCreateScreen 재작성: 부서/담당자 dropdown + 우선순위 + 반복 패턴 UI (daily/weekly 요일선택/monthly 일자입력) + 캘린더 표시 스위치
+  - TaskDetailScreen 재작성: 상태/우선순위/반복 뱃지 + 정보 카드 + 보고 카드 + **TaskReportSheet** (완료/미완료/지연 선택, 미완료·지연 시 사유 필수)
+  - 오래된 파일 삭제: `daily_log.dart`, `task_comment.dart`, `task_update.dart`, `daily_check_screen.dart`
+  - calendar_provider: Task 이벤트 소스 복구 (dueDate 기반, 템플릿 제외)
+  - test/widget_test.dart: Task/DailyLog/TaskComment 그룹 삭제
+  - `dart analyze`: **No issues found**
 
 - ✅ **Step 4 C-2: Departments 신설** (2026-09-03)
   - `lib/features/projects/` → `lib/features/departments/` 폴더 및 파일 rename (git mv)
@@ -111,7 +126,7 @@
 ### Step 4: Flutter 코드 재구성 (우선순위 중)
 - ✅ C-1: Auth (역할 enum 교체, 그리팅 수정)
 - ✅ C-2: Departments (projects 폴더 rename + 재정의)
-- ⏳ C-3: Tasks 핵심 개조 (모델, 화면, 보고 시트)
+- ✅ C-3: Tasks 핵심 개조 (모델, 화면, 보고 시트)
 - ⏳ C-4: Dashboard 역할별 뷰
 - ⏳ C-5: Calendar (이벤트 소스 정리)
 - ⏳ C-6: Memos (문자열만 확인)
