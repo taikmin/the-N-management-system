@@ -1,6 +1,6 @@
 # The N Resort Management — 진행 현황
 
-> 마지막 업데이트: 2026-09-03 (Step 4 전체 완료 · 다음 세션은 Vercel 배포부터)
+> 마지막 업데이트: 2026-09-04 (Vercel 프로덕션 배포 완료 · 실 사용 가능)
 
 ---
 
@@ -23,6 +23,16 @@
 ### 2차 플랜 준비
 - ✅ 2026-09-03 — **2차 플랜 설계 완료** (호텔 도메인 재설계)
   - 사용자 요구 확정 (역할 3단계, 업무 유형, 보고 방식, 이메일 정책 등)
+
+### 배포 (M5)
+- ✅ 2026-09-04 — **Vercel 프로덕션 배포 완료**
+  - URL: https://the-n-resort.vercel.app
+  - 프로젝트: `taikmin1/the-n-resort` (Vercel), 업로드 3.5MB
+  - 배포 절차: `flutter build web --release` → `cp vercel.json build/web/` → `vercel deploy --prod --token=<VERCEL_TOKEN> --yes --name the-n-resort`
+  - `.env`는 Flutter 에셋으로 번들에 포함됨 (Supabase URL/anon key 자동 임베드) → Vercel 환경변수 별도 설정 불필요
+  - Supabase Auth URL Configuration에 배포 URL 등록 (Site URL + Redirect URLs)
+  - 로그인 확인: `lee.taikmin@gmail.com` (Dashboard SQL로 비밀번호 재설정 후 성공)
+  - 대시보드/부서/업무 화면 실동작 확인 완료
 
 ---
 
@@ -154,24 +164,22 @@
 - ✅ C-9: 문자열 최종 정리
 
 ### Polish + 발표 준비
-- ⏳ Vercel 새 프로젝트 배포
+- ✅ Vercel 새 프로젝트 배포 (2026-09-04)
 - ⏳ 스크린샷 촬영 (`docs/screenshots/`)
 - ⏳ README.md 최종 갱신 (실제 구현 반영)
 - ⏳ 로컬 폴더명 오타 수정 (`magnagement` → `management`, 세션 종료 후 수동)
+- ⏳ 비밀번호 재설정 화면 신설 (`/auth/reset-password` 라우트 + `updateUser(password:)`)
 
 ---
 
-## 다음 세션 우선순위 (Demo 준비)
+## 다음 세션 우선순위
 
-**목표**: 사용자님이 다른 노트북에서 데모를 할 수 있도록 배포.
+**배포 완료**. 이제 실제 사용 & 마무리 폴리싱 단계.
 
-### 1순위: Vercel 배포 (실 사용/데모용)
-- 로컬에서 `vercel login`
-- `flutter build web --release`
-- `vercel --prod` → URL 부여받기 (예: `https://the-n-resort.vercel.app`)
-- (선택) Vercel Dashboard에서 GitHub 저장소 연결 → 자동 재배포
-
-배포 후엔 어떤 컴퓨터/폰이든 그 URL로 접속하면 바로 사용 가능. Flutter 설치 불필요.
+### 1순위: 비밀번호 재설정 화면 신설
+- 원인: Supabase가 recovery 이메일을 보내지만 앱에 `/auth/reset-password` 라우트가 없어 링크가 로그인 페이지로 리다이렉트됨 (L-017 참조)
+- 필요 작업: 라우트 추가 + 새 비번 입력 화면 + `supabase.auth.updateUser(UserAttributes(password: ...))` + Supabase Redirect URL 등록
+- 예상 시간: 30분~1시간
 
 ### 2순위: Supabase 후속 (이메일 실동작)
 - Dashboard → Database → Functions → `send_daily_digest` → 함수 내 `Bearer YOUR_RESEND_API_KEY_HERE`를 실제 Resend 키로 교체

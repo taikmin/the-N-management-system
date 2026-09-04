@@ -172,7 +172,8 @@
 
 | ID | 태스크 | DoD | 의존 | 상태 |
 |---|---|---|---|---|
-| T-5-01 | Vercel 새 프로젝트 생성 + 배포 | 배포 URL 확보 | Step 4 완료 | ⏳ |
+| T-5-01 | Vercel 새 프로젝트 생성 + 배포 | 배포 URL 확보 | Step 4 완료 | ✅ (2026-09-04, https://the-n-resort.vercel.app) |
+| T-5-06 | 비밀번호 재설정 화면 신설 (`/auth/reset-password` 라우트 + `updateUser(password:)`) | 이메일 링크 클릭 시 새 비번 입력 UI 동작 | T-5-01 | ⏳ |
 | T-5-02 | 스크린샷 촬영 (`docs/screenshots/hotel_*.png`) | 주요 화면 5장+ | T-5-01 | ⏳ |
 | T-5-03 | `README.md` 최종 갱신 (실제 구현 반영, 스크린샷 삽입) | 발표 자료 만들기에 충분한 정보 | T-5-02 | ⏳ |
 | T-5-04 | 로컬 폴더명 오타 수정 (`magnagement` → `management`, 세션 종료 후 수동) | 폴더명 정정 | - | ⏳ |

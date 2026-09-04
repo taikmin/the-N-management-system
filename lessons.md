@@ -142,3 +142,28 @@
 - **배운 점**: 로컬 dev 서버 실행은 반드시 사용자가 자기 터미널에서 직접. Claude가 background로 못 띄움.
 - **앞으로의 적용**: 사용자가 앱을 실행해서 눈으로 확인해야 할 때는 "터미널에서 이 명령어 실행하세요"라고 안내. 배포된 URL이 있으면 그것을 사용.
 
+## L-016. Vercel 배포는 `--token` 플래그로 non-interactive 가능
+- **날짜**: 2026-09-04
+- **상황**: `vercel login`은 브라우저 인증이 필요해서 Claude Code의 non-interactive shell에서 불가.
+- **발견/문제**: `VERCEL_TOKEN` 환경변수도 사용자 PowerShell과 Claude의 Bash가 분리되어 있어 전달 안 됨. `vercel deploy --prod --token=<TOKEN> --yes --name <PROJECT>` 형식으로 모든 명령을 한 줄에 넣어야 자동화 가능.
+- **배운 점**:
+  - Flutter Web은 `.env`가 `pubspec.yaml` 에셋으로 등록되어 있어 `flutter build web`시 자동으로 JS 번들에 포함됨 → Vercel Dashboard 환경변수 설정 불필요.
+  - `vercel.json`은 배포할 output 폴더(`build/web`)에 함께 있어야 SPA 라우팅(rewrites) 적용됨. root의 vercel.json은 무시되므로 배포 전 `cp vercel.json build/web/` 필요.
+  - 최초 배포는 `--yes --name <프로젝트명>`으로 확인 프롬프트 스킵. 이후 `.vercel/project.json`이 자동 생성되어 재배포 시 프로젝트 자동 인식.
+- **앞으로의 적용**: 재배포 스크립트는 `flutter build web --release && cp vercel.json build/web/ && cd build/web && vercel deploy --prod --token=$TOKEN` 순서.
+
+## L-017. Supabase 무료 티어 이메일 rate limit — SQL로 비밀번호 직접 변경 가능
+- **날짜**: 2026-09-04
+- **상황**: 비밀번호 잊어버려서 "Send password recovery" + "Send magic link" 연속 시도 → `email rate limit exceeded` 에러.
+- **발견/문제**: 앱에 비밀번호 재설정 콜백 라우트(`/auth/reset-password`)가 아예 없어 recovery 링크가 그냥 로그인 페이지로 리다이렉트됨. 그래서 magic link 시도했더니 rate limit 걸림.
+- **배운 점**: Supabase Dashboard SQL Editor에서 `UPDATE auth.users SET encrypted_password = crypt('newpw', gen_salt('bf')) WHERE email = '...';` 로 즉시 변경 가능. pgcrypto가 기본 활성이라 별도 설정 불필요. 이메일 발송 없음 → rate limit 무관.
+- **앞으로의 적용**:
+  - 비밀번호 재설정 화면(`/auth/reset-password`)은 다음 세션 태스크로 추가 (auth 콜백 라우트 + `updateUser(password:)` 호출).
+  - 개발 중 비번 분실은 SQL로 즉시 해결.
+
+## L-018. 데모 배포 후 Supabase Auth Redirect URL 등록 필수
+- **날짜**: 2026-09-04
+- **상황**: Vercel 배포 성공 후 배포 URL(`https://the-n-resort.vercel.app`)로 로그인.
+- **배운 점**: Supabase Dashboard → Authentication → URL Configuration에서 Site URL과 Redirect URLs에 배포 URL을 추가해야 auth 관련 리다이렉트가 정상 동작. localhost만 등록된 상태로 두면 이메일 링크류가 깨짐.
+- **앞으로의 적용**: 새 도메인/URL 배포 시 반드시 Supabase Auth URL 목록 갱신.
+
