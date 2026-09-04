@@ -116,7 +116,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       final repo =
           ref.read(authRepositoryProvider);
-      await repo.resetPassword(email);
+      // Supabase recovery 링크가 돌아올 URL.
+      // 현재 origin(로컬/배포 자동 감지) + 앱 라우트.
+      // Supabase Dashboard의 Redirect URLs에도 등록 필요.
+      final redirectTo =
+          '${Uri.base.origin}/#/auth/reset-password';
+      await repo.resetPassword(
+        email,
+        redirectTo: redirectTo,
+      );
       if (mounted) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()

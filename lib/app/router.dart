@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../features/activity/presentation/screens/activity_log_screen.dart';
 import '../features/auth/presentation/screens/login_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
+import '../features/auth/presentation/screens/reset_password_screen.dart';
 import '../features/auth/providers/auth_provider.dart';
 import '../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../features/dashboard/presentation/screens/settings_screen.dart';
@@ -26,16 +27,29 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>();
 /// GoRouter 라우터 Provider
 final routerProvider = Provider<GoRouter>((ref) {
   final isLoggedIn = ref.watch(isLoggedInProvider);
+  final isRecovery = ref.watch(passwordRecoveryProvider);
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/dashboard',
     redirect: (context, state) {
-      final loggingIn = state.matchedLocation == '/login' ||
-          state.matchedLocation == '/register';
+      const resetPath = '/auth/reset-password';
+      final loc = state.matchedLocation;
+      // 공개(비로그인) 접근 가능 경로. reset-password는 recovery 링크로
+      // 진입하는데, Supabase가 URL 토큰을 파싱하기 전에는 isLoggedIn=false
+      // 상태이므로 로그인 가드를 우회해야 한다.
+      final isPublic = loc == '/login' ||
+          loc == '/register' ||
+          loc == resetPath;
 
-      if (!isLoggedIn && !loggingIn) return '/login';
-      if (isLoggedIn && loggingIn) return '/dashboard';
+      // 이미 복구 세션이 활성화됐다면 재설정 화면으로 강제 이동
+      if (isRecovery && loc != resetPath) return resetPath;
+
+      if (!isLoggedIn && !isPublic) return '/login';
+      if (isLoggedIn && !isRecovery &&
+          (loc == '/login' || loc == '/register')) {
+        return '/dashboard';
+      }
       return null;
     },
     routes: [
@@ -46,6 +60,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: '/auth/reset-password',
+        builder: (context, state) => const ResetPasswordScreen(),
       ),
 
       // Main app routes with shell navigation

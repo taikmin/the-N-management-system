@@ -97,3 +97,39 @@ final isCeoOrAboveProvider = Provider<bool>((ref) {
 final isManagementProvider = Provider<bool>((ref) {
   return ref.watch(currentUserProvider).valueOrNull?.isManagement ?? false;
 });
+
+/// 비밀번호 복구 세션 상태.
+/// Supabase가 recovery 링크를 처리하면 [AuthChangeEvent.passwordRecovery]
+/// 이벤트가 발생하고, 그 시점부터 사용자가 새 비밀번호를 저장하거나
+/// 로그아웃할 때까지 true를 유지한다.
+final passwordRecoveryProvider =
+    StateNotifierProvider<PasswordRecoveryNotifier, bool>((ref) {
+  return PasswordRecoveryNotifier(ref);
+});
+
+class PasswordRecoveryNotifier extends StateNotifier<bool> {
+  PasswordRecoveryNotifier(this._ref) : super(false) {
+    _sub = _ref
+        .read(authRepositoryProvider)
+        .authStateChanges
+        .listen((data) {
+      if (data.event == AuthChangeEvent.passwordRecovery) {
+        state = true;
+      } else if (data.event == AuthChangeEvent.signedOut) {
+        state = false;
+      }
+    });
+  }
+
+  final Ref _ref;
+  late final StreamSubscription<AuthState> _sub;
+
+  /// 새 비밀번호 저장 성공 후 호출해 recovery 상태를 종료.
+  void clear() => state = false;
+
+  @override
+  void dispose() {
+    _sub.cancel();
+    super.dispose();
+  }
+}

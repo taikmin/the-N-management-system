@@ -157,8 +157,17 @@ class AuthRepository {
   }
 
   /// 비밀번호 재설정 이메일 발송
-  Future<void> resetPassword(String email) async {
-    await _auth.resetPasswordForEmail(email);
+  ///
+  /// [redirectTo]: 이메일 링크 클릭 후 돌아올 URL.
+  /// Supabase Dashboard의 Redirect URLs에 사전 등록되어 있어야 함.
+  Future<void> resetPassword(String email, {String? redirectTo}) async {
+    await _auth.resetPasswordForEmail(email, redirectTo: redirectTo);
+  }
+
+  /// 현재 로그인된 사용자의 비밀번호 변경.
+  /// 비밀번호 복구(recovery) 세션 상태에서 호출.
+  Future<void> updatePassword(String newPassword) async {
+    await _auth.updateUser(UserAttributes(password: newPassword));
   }
 
   /// [Admin] 사용자 역할 변경
